@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{
+            padding: 10px 40px;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body><h1 id="epi">EPI</h1>
+<p>EPI ( EASY PACKAGE INSTALLER ) es un programa para empaquetar instalaciones mas complicadas que no se pueden realizar mediante debs o para aquellos casos en los cuales la instalacion de un paquete se quiere realizar de una forma sencilla ( mediante el zero-center ).</p>
+<p>Un paquete epi puede consistir en dos ficheros:
+    - fichero epi
+    - script de instalacion.
+El fichero .epi si que es necesario, mientras que el script de instalacion solo es necesario en caso de que se quiera hacer algun proceso en alguna de las fases que ejecuta EPI.
+Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUETE.</p>
+<h2 id="formatodeficheroepi">Formato de fichero epi</h2>
+<p>El fichero epi es el fichero que contiene toda la meta informacion sobre el proceso de instalacion, como puede ser la url desde donde se bajara los ficheros necesarios, si necesita de permisos de root. Es un fichero que tiene un mimetype asociado, por lo que al hacer doble click sobre el se lanzara la aplicacion epi-gtk y por lo que tiene una extension .epi .</p>
+<h3 id="clavesdelfichero">Claves del fichero</h3>
+<ul>
+<li><strong>type</strong><ul>
+<li>Required : True</li>
+<li>Type : String</li>
+<li>Values : [ "apt" | "deb" | "file" ]</li>
+<li>Description : Describe el tipo de EPI que es.<ul>
+<li>Apt: Realiza una instalacion desde un repositorio mediante apt. Puede ser el propio que ya se dispone u otro que se añade para la ocasion</li>
+<li>Deb: Instala un deb que puede estar disponible en el sistema o que puede estar en una url.</li>
+<li>File : Ejecuta los pasos que se le indiquen en el fichero de script en el paso de instalación.</li></ul></li>
+<li>Example : <code>{ ... type: "apt" ... }</code></li></ul></li>
+<li><strong>script</strong><ul>
+<li>Required : file type. <em>( Solo es obligado ofrecer este fichero en el tipo "file", en el resto de tipos es opcional y serviria para ayudar realizando ajustes en las distintas fases de instalación )</em></li>
+<li>Description : Indica el script donde están indicado los pasos.</li>
+<li>Type : Dictionary</li>
+<li>Keys : <ul>
+<li>name ( STRING ) : Ruta donde se encuentra el script. Esta debe ser una ruta absoluta.</li>
+<li>modes ( DICTIONARY ): Diccionario que indica cuales son las fases que se han de ejecutar. Contiene todas las fases que han de llamar desde epi. Estas son : <strong>preinstall</strong>, <strong>install</strong>, <strong>postinstall</strong>, <strong>remove</strong> y los valores de estos son <strong>true</strong> o <strong>false</strong>. ESTE ATRIBUTO EN UN FUTURO SE DEBERIA DEPRECAR PARA FACILITAR LA ESCRITURA Y SOLO USAR <strong>remove</strong> pero no dentro del keys, sino como key de <strong>script</strong>. </li>
+<li>remove ( BOOLEAN ) : <strong>Pendiente de aprovar</strong> Este atributo indicara si el script tiene fase de desinstalación, y sobretodo esta pensado para notificar a la gui que tiene una fase de desisntalación.</li></ul></li>
+<li>Example: <code>{ ... "script" : { "name" : "/usr/share/foo/foo_script" , "modes" : { "preinstall" : true, "install" : false, "postinstall" : true , "remove" : false } } ... }</code></li></ul></li>
+<li><strong>depends</strong><ul>
+<li>Required: all types</li>
+<li>Type : String</li>
+<li>Description: Este atributo sirve para crear dependencias con otro epi. Sirve para asegurarse que otro epi se ha instalado correctamente antes de instalar nuestro epi. Hay que indicarle la ruta donde se encutra dicho epi. Esto tiene la problematica de que no se puede realizar una dependencia con un nombre unico debido a que no se dispone de un respositorio de epi's.</li>
+<li>Example: <code>{ ... "depends":"/usr/share/zero-google-earth/google-earth.epi" ... }</code></li></ul></li>
+<li><strong>pkg_list</strong><ul>
+<li>Required: deb | apt type</li>
+<li>Description : Lista de paquetes que instalara en la fase de instalación.</li>
+<li>Type : List</li>
+<li>Keys:<ul>
+<li>name ( STRING ) : Nombre del paquete a instalar. Este tambien sera el nombre que se utilice a la hora de mostrar en la gui.</li>
+<li>key_store ( STRING ) : "Nombre del paquete en la store para obtener metainformacion"</li>
+<li><strong>--- Only on deb type ---</strong></li>
+<li>version: En caso de ser un deb puede tener distintos debs para distintas arquitecturas. En este campo se le indica el nombre del deb que tiene que instalar / descargar dependiendo de la arquitectura. Los valores que puede tomar son <strong>all</strong>, <strong>64b</strong> y <strong>32b</strong>, donde all no distingue entre arquitecturas y los otros dos campos restantes equivalen a lo que indica. <strong>Ejemplo</strong> : <code>"version":{"all":"","64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"}</code></li>
+<li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li></ul></li>
+<li>Example: <code>{ ... "pkg_list" : [{"name":"google-earth-pro-stable","version":{"all":"","64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"},"key_store":"zero-lliurex-gearth","url_download":"http://dl.google.com/dl/earth/client/current/"}] ...}</code></li></ul></li>
+<li><strong>name</strong><ul>
+<li>Required: file type</li>
+<li>Type : String</li>
+<li>Description: Tiene el mismo comportamiento que name en <strong>pkg_list</strong></li></ul></li>
+<li><strong>key_store</strong><ul>
+<li>Required: file type</li>
+<li>Type : String</li>
+<li>Description: Tiene el mismo comportamiento que key<em>store en <strong>pkg</em>list</strong></li></ul></li>
+<li><strong>version</strong><ul>
+<li>Required : file type</li>
+<li>Type : List</li>
+<li>Description: Tiene el mismo comportamiento que version en <strong>pkg_list</strong>. En este caso sobretodo se utiliza para saber que version ha de descargar, ya que normalmente este tipo de epi se utiliza para instalar aplicaciones que se ha de descargar de la pagina oficial.</li></ul></li>
+<li><strong>repository</strong><ul>
+<li>Required: apt type</li>
+<li>Type : List</li>
+<li>Description: Lista de de los repositorios que se han de añadir temporalmente para instalar los paquetes indicados en el pkg_list en el tipo de apt. Estos repositorios y claves seran borrados una vez se termine de realizar la instalacion.</li>
+<li>Keys:<ul>
+<li>url ( STRING ) : Linea exacta que se añadiria en un sources.list del repositorio.</li>
+<li>key_cmd ( STRING ) : Comando que se utilizara para añadir las keys del repositorio para que sea una fuente confiable.</li></ul></li>
+<li>Example : <code>{... "repository": [{"url":"deb http://repository.spotify.com stable non-free","key_cmd":"apt-key --keyring /tmp/epi_keyring adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886 0DF731E45CE24F27EEEB1450EFDC8610341D9410"}] ...}</code></li></ul></li>
+<li><strong>force32</strong><ul>
+<li>Required: All types</li>
+<li>Type:  Boolean</li>
+<li>Description: Fuerza a que en la instalacion se realize en base a 32 bits</li></ul></li>
+<li><strong>require_x</strong><ul>
+<li>Required: All types</li>
+<li>Type:  Boolean</li>
+<li>Description: Le dice al instalador que para llevar a cabo este proceso es necesario que se ejecute este proceso en una sesion grafica con escritorio. Esto sobretodo se utiliza para aquellos casos en los que las aplicaciones van a lanzar una aplicacion grafica que pide datos.</li></ul></li>
+<li><strong>zomando</strong><ul>
+<li>Required: All types</li>
+<li>Type: String</li>
+<li>Description: Aqui se indica el zomando asociado (puede no tenerlo) para realizar las modificaciones del estado correspondiente a este. De esta forma si se instala un paquete en el zero-center se representara como instalado.</li></ul></li>
+<li><strong>download_script</strong><ul>
+<li>Required: file type</li>
+<li>Type: Boolean</li>
+<li>Description: Este campo se usa para indicarle a la interfaz que tiene que ser ella la que gestione la descarga. De esta forma si el valor de este campo es <strong>false</strong> EPI sera el encargado de descargar los ficheros asociados (debs o ficheros) basados en la arquitectura en la que estes. De otra forma la descarga de los ficheros se tendra que hacer de forma manual desde dentro del script, en la cual se tendra que comprobar que tipo de arquitectura eres y en base a eso bajar uno u otro. Todos los ficheros descargados mediante esto van a la ruta <em>/var/cache/epi-downloads/</em></li></ul></li>
+<li><strong>url_download</strong><ul>
+<li>Required: file type</li>
+<li>Type: Boolean</li>
+<li>Description: Tiene un comportamiento similar a url<em>download de <strong>pkg</em>list</strong>. En este caso esta pensado para los epis de tipo file</li></ul></li>
+<li><strong>require_root</strong><ul>
+<li>Required: file type</li>
+<li>Type: Boolean</li>
+<li>Description: Este campo esta pensado para indicarle al instalador que se require de permisos de root para poder instalar esta aplicacion. Esta enfocado para aquellas aplicaciones que pueden ser instalados en el home del usuario. De esta forma si la aplicacion se instala en su home el valor de este atributo sera false.</li></ul></li>
+</ul>
+<h2 id="formatodelscriptdeinstalacion">Formato del script de instalacion</h2>
+<p>El script de instalacion es el encargado de indicar todas las acciones que se ejecutaran en las distintas fases que ejecuta EPI. Estas fases son las siguientes:
+    - preinstall
+    - install
+    - postinstall
+    - remove</p>
+<p>En cada una de las fases se llama el script entero pasandole como argumento la fase en la que se encuentra. Por esta razon se ha de hacer una comparacion del argumento que estamos recibiendo para ejecutar los pasos de instalacion o para realizar el paso de desinstalacion. Es <strong>importante</strong> que el script termine con exit 0 y en caso de que exista un error se salga del scritp con exit 1</p>
+<h3 id="example">Example</h3>
+<pre><code>#!/bin/bash
+
+ACTION="$1"
+VERSION="AdobeAIRInstaller.bin"
+PACKAGE_NAME="adobeair"
+APP_PATH="/var/cache/epi-downloads/"
+LOG_FILE="/tmp/zero-adobeair.log"
+uname -m &gt; /tmp/architectur.txt
+if [ $(grep "x86_64" /tmp/architectur.txt) ] ; then
+    ARCH="64"
+else
+    ARCH="32"
+fi
+
+case $ACTION in
+
+    preInstall)
+
+    ;;
+
+    install)
+
+        chmod +x $APP_PATH$VERSION
+
+        $APP_PATH$VERSION -silent -eulaAccepted -pingbackAllowed
+        TEST=$( dpkg-query -s $PACKAGE_NAME 2&gt; /dev/null| grep Status | cut -d " " -f 4 )
+        if [ "$TEST" != 'installed' ]; then
+            exit 1          
+        fi
+    ;;
+
+    postInstall)
+
+    ;;
+
+esac
+exit 0
+</code></pre></body>
+</html>

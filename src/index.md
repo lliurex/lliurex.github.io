@@ -1,3 +1,3 @@
 # LliureX Developer Web
-## Human Guidelines 
-## 
+## [Human Guidelines](HGI)
+## [EPI](EPI/Guia_Epi)
