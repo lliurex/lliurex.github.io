@@ -1,10 +1,11 @@
-#BUILDING FIREFOX-ESR FOR LLIUREX
+# BUILDING FIREFOX-ESR FOR LLIUREX
 Debido a la necesidad de poder ejecutar los plugins de java y flash en Lliurex se incluye el firefox-esr. Por tal de diferenciarlo de Firefox se crea una compilación personalizada que nos permite por un lado mantener ambos navegadores con sus configuraciones completamente diferenciadas y por otro lado diferenciar ambos programas de cara al entorno de escritorio.
 En la página oficial de Mozilla encontramos las instrucciones genéricas para compilar Firefox ( https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Build_Instructions/Simple_Firefox_build/Linux_and_MacOS_build_preparation ) pero debido a las diferencias del procedimiento entre versiones de Firefox y la dispersión de la información necesaria para conseguir una compilación personalizada de Firefox hemos decidido crear esta pequeña guía.
 
-##1.- Paquetes requeridos
+## 1.- Paquetes requeridos
 Firefox solo puede compilarse en máquinas de 64 bits. Si se necesita una versión para 32 bits (i386 a partir de ahora) es necesario crear un entorno de chroot dentro de la máquina de 64 bits (amd64 a partir de ahora). Como en Lliurex necesitamos ambas versiones la lista de paquetes requeridos es bastante extensa:
-###amd64
+
+### amd64
 
 * python
 * GCC >= 4.9.9
@@ -21,7 +22,7 @@ Firefox solo puede compilarse en máquinas de 64 bits. Si se necesita una versi�
 sudo apt-get install mercurial python autoconf2.13 rustc cargo libgtk-3-dev libgconf2-dev libdbus-glib-1-dev libpulse-dev yasm gcc
 ```
 
-###i386
+### i386
 * schroot
 * gcc-multilib
 * g++-multilib
@@ -30,11 +31,12 @@ sudo apt-get install mercurial python autoconf2.13 rustc cargo libgtk-3-dev libg
 sudo apt-get install schroot gcc-multilib g++-multilib
 ```
 
-##2.- Descargar fuentes
+## 2.- Descargar fuentes
 Para descargar las fuentes debemos acceder al [servidor de descargas de mozilla](https://archive.mozilla.org/pub/firefox/releases/) y buscar el último directorio de la versión 52 disponible (52.5.2esr a la hora de escribir esta guía).
 Una vez en el directorio entraremos en la carpeta <b>source</b> y descargaremos el fichero acabado en <i>source.tar.xz</i>
 Una vez obtenido lo descomprimimos en nuestro directorio de trabajo y ya podemos empezar con el proceso de compilación.
-##3.- El entorno de compilación
+
+## 3.- El entorno de compilación
 Mozilla utiliza un entorno de compilación propio para generar sus programas (firefox, thunderbird...) basado en ficheros <i>mozconfig</i> que son los encargados de asignar las opciones de configuración y compilación de los programas.
 Dichos ficheros soportan varias directivas:
 
@@ -82,7 +84,7 @@ mk_add_options MOZ_APP_NAME=firefoxESR
 mk_add_options MOZ_APP_DISPLAYNAME=FirefoxESR
 ```
 
-##4.- Personalizar firefox
+## 4.- Personalizar firefox
 Una vez hemos creado nuestro fichero de configuración es hora de modificar los ficheros necesarios para que nuestro firefox-esr quede claramente diferenciado del firefox,
 para ello debemos modificar el <i>branding</i> y ajustarlo a nuestros requerimientos. En este punto podríamos también modificar los ficheros de preferencias pero estos los agregaremos posteriormente en el proceso de empaquetado.
 El <i>branding</i> de firefox consiste en los iconos y otros elementos visuales de la aplicación. La recomendación de Mozilla es usar el branding oficial para compilaciones limpias de los programas, aurora para las compilaciones de desarrollo, nightly para las nightly-builds y unofficial para las adaptciones personalizadas.
@@ -103,7 +105,7 @@ MOZ_APP_NAME=firefoxESR
 
 Una vez finalizado ya deberíamos tener todo listo para compilar firefox con nuestras opciones que darán lugar a un ejectuable llamado firefoxESR que usará como directorio de perfiles ~/.mozilla/firefoxesr de forma y manera que podrá convivir con una instalación normal de firefox.
 
-##5.- Compilar para amd64
+## 5.- Compilar para amd64
 Una vez configurados todos los ficheros compilar para amd64 pasa por situarnos en el directorio raíz de las fuentes y ejecutar los siguientes comandos
 
 ```sh
@@ -115,7 +117,7 @@ Una vez configurados todos los ficheros compilar para amd64 pasa por situarnos e
 El primer comando lanza el configure, el segundo comando ejecuta la compilación y con el tercero podemos lanzar el firefox que acabamos de compilar para comprobar que todo sale según lo esperado.
 Si todo se muestra tal y como debe con el último comando prepararems el código para poder generar el paquete .deb.
 
-##6.- Compilar para i386
+## 6.- Compilar para i386
 Para compilar para i386 necesitaremos, en Lliurex y otros derivados de Ubuntu/Debian, un entorno chroot de 32bits. Hemos optado por schroot como aplicación para generar nuestro chroot por su sencillez para configurarlo.
 También necesitaremos instalar los paquetes gcc-multilib y g++-multilib que nos permitiran generar binarios para i386.
 ###Configuración del entorno chroot
@@ -151,13 +153,13 @@ Para ello editamos el fichero <i>/etc/schroot/desktop/fstab</i> y agregamos la s
 ```sh
 sudo debootstrap --variant=buildd --arch=i386 --foreign xenial /var/chroot/linux32 http://archive.ubuntu.com/ubuntu
 ```
-*Accedemos al chroot y finalizamos la instalación del sistema
+* Accedemos al chroot y finalizamos la instalación del sistema
 
 ```sh
 sudo schroot /var/chroot/linux2
 /debootstrap/debootstrap --second-stage
 ```
-*Agregamos los repositiorios (dentro del chroot)
+* Agregamos los repositiorios (dentro del chroot)
 Para ello editamos el fichero <i>/etc/apt/sources.list</i> y agregamos los repositorios de ubuntu.
 
 ```sh
@@ -166,7 +168,7 @@ deb http://archive.ubuntu.com/ubuntu xenial-updates main universe" > /etc/apt/so
 apt-get update
 apt-get install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev libgtk-3-dev libgtk2.0-dev libiw-dev libnotify-dev libpulse-dev libx11-xcb-dev libxt-dev mesa-common-dev python-dbus xvfb yasm
 ```
-*Creamos los enlaces necesarios (fuera del chroot)
+* Creamos los enlaces necesarios (fuera del chroot)
 
 ```sh
 cd /usr/lib
@@ -175,12 +177,12 @@ ln -s /var/chroot/linux32/usr/lib/i386-linux-gnu /usr/lib/
 ln -s /var/chroot/linux32/usr/include/i386-linux-gnu /usr/include/
 ```
 Si anteriormente hemos instalado multilib o ya tenemos un entorno de cross-compiling estos ficheros es posible que ya existirán y no podamos crear los enlaces. En este caso puedes crearlos directamente en los directorios correspondientes (si es necesario).
-*Añadimos la arquitectura i686 al compilador de Rust
+* Añadimos la arquitectura i686 al compilador de Rust
 
 ```sh
 rustup target add i686-unknown-linux-gnu
 ```
-*Preparamos el fichero <i>mozconfig</i> para la compilación de i686
+* Preparamos el fichero <i>mozconfig</i> para la compilación de i686
 Para ello lo editamosy agregamos las siguientes lineas:
 
 ```sh
@@ -196,7 +198,7 @@ if test `uname -m` = "x86_64"; then
   ac_add_options --x-libraries=/usr/lib
 fi
 ```
-*Lanzamos la compilación
+* Lanzamos la compilación
 
 ```sh
 ./mach configure
@@ -226,7 +228,7 @@ cd %DIR_FIREFOX%
 Con esto ya tendremos un directorio obj-firefox-i686-pc-linux-gnu con nuestras fuentes listas para ser empaquetadas.
 
 
-##7.- Empaquetado
+## 7.- Empaquetado
 Si has llegado hasta aquí conservando tu cordura e integridad moral es el momento de despedirte de ella...
 
 Después de haber realizado la compilación tendremos dentro del directorio de las fuentes los directorios <i>obj-i686-pc-linux</i> y <i>obj-x86_64-pc-linux-gnu</i>. Estos son los directorios donde tenemos nuestro firefox compilado y empaquetado, listo para generar nuestro paquete.
