@@ -204,6 +204,16 @@ fi
 ./mach configure
 ./mach build
 ```
+
+Es importante señalar que puede que al compilar nos de un error el programa <i>nsinstall</i>. De ser así <b>debemos copiar la versión de 64 bits</b> del nsinstall al directorio <i>config</i> de las fuentes.
+
+```sh
+#Desde el directorio raíz de las fuentes del firefox
+cp firefox-52.5.0esr/obj-x86_64-pc-linux-gnu/config/nsinstall config/
+#volvemos a lanzar la compilacin y debería funcionar
+./mach build
+```
+
 En este punto debería bastar con ejecutar 
 
 ```sh
@@ -229,7 +239,7 @@ Con esto ya tendremos un directorio obj-firefox-i686-pc-linux-gnu con nuestras f
 
 
 ## 7.- Empaquetado
-Si has llegado hasta aquí conservando tu cordura e integridad moral es el momento de despedirte de ella...
+Si has llegado hasta aquí conservando tu cordura e integridad moral es el momento de felicitarte, ya casi estamos...
 
 Después de haber realizado la compilación tendremos dentro del directorio de las fuentes los directorios <i>obj-i686-pc-linux</i> y <i>obj-x86_64-pc-linux-gnu</i>. Estos son los directorios donde tenemos nuestro firefox compilado y empaquetado, listo para generar nuestro paquete.
 
