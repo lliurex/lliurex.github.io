@@ -1,6 +1,7 @@
-# BUILDING FIREFOX-ESR FOR LLIUREX
+# EMPAQUETANDO FIREFOX-ESR PARA LLIUREX
 Debido a la necesidad de poder ejecutar los plugins de java y flash en Lliurex se incluye el firefox-esr. Por tal de diferenciarlo de Firefox se crea una compilación personalizada que nos permite por un lado mantener ambos navegadores con sus configuraciones completamente diferenciadas y por otro lado diferenciar ambos programas de cara al entorno de escritorio.
-En la página oficial de Mozilla encontramos las instrucciones genéricas para compilar Firefox ( https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Build_Instructions/Simple_Firefox_build/Linux_and_MacOS_build_preparation ) pero debido a las diferencias del procedimiento entre versiones de Firefox y la dispersión de la información necesaria para conseguir una compilación personalizada de Firefox hemos decidido crear esta pequeña guía.
+En la página oficial de Mozilla encontramos [las instrucciones genéricas para compilar Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Build_Instructions/Simple_Firefox_build/Linux_and_MacOS_build_preparation) pero debido a las diferencias del procedimiento entre versiones de Firefox y la dispersión de la información necesaria para conseguir una compilación personalizada de Firefox hemos decidido crear esta pequeña guía.
+Si quieres tomar el camino rápido los pasos 3 y 4 puedes omitirlos y ejecutar la shell [firefox_customizer.sh](http://svn.lliurex.net/xenial/devtools/firefox_customizer) disponible en [el subversion de Lliurex](https://svn.lliurex.net) pero siempre es conveniente al menos leer por encima dichos pasos.
 
 ## 1.- Paquetes requeridos
 Firefox solo puede compilarse en máquinas de 64 bits. Si se necesita una versión para 32 bits (i386 a partir de ahora) es necesario crear un entorno de chroot dentro de la máquina de 64 bits (amd64 a partir de ahora). Como en Lliurex necesitamos ambas versiones la lista de paquetes requeridos es bastante extensa:
@@ -23,6 +24,7 @@ sudo apt-get install mercurial python autoconf2.13 rustc cargo libgtk-3-dev libg
 ```
 
 ### i386
+* Los requeridos en amd64
 * schroot
 * gcc-multilib
 * g++-multilib
@@ -85,7 +87,7 @@ mk_add_options MOZ_APP_NAME=firefoxESR
 mk_add_options MOZ_APP_DISPLAYNAME=FirefoxESR
 ```
 
-Junto a este fichero es necesario modificar la shell <i>confvars.sh</i> presente en el directorio "browser" para redefinir las vartiables MOZ_APP_BASENAME y MOZ_APP_VENDOR.
+Junto a este fichero es necesario modificar la shell <i>confvars.sh</i> presente en el directorio "browser" para redefinir la vartiable MOZ_APP_BASENAME
 
 ```sh
 MOZ_APP_BASENAME=firefoxESR
