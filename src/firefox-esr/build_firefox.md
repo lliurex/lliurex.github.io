@@ -89,7 +89,6 @@ Junto a este fichero es necesario modificar la shell <i>confvars.sh</i> presente
 
 ```sh
 MOZ_APP_BASENAME=firefoxESR
-MOZ_APP_VENDOR=Lliurex
 ```
 dejando el resto de la shell sin modificar.
 
