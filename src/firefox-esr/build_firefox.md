@@ -33,7 +33,8 @@ sudo apt-get install schroot gcc-multilib g++-multilib
 
 ## 2.- Descargar fuentes
 Para descargar las fuentes debemos acceder al [servidor de descargas de mozilla](https://archive.mozilla.org/pub/firefox/releases/) y buscar el último directorio de la versión 52 disponible (52.5.2esr a la hora de escribir esta guía).
-Una vez en el directorio entraremos en la carpeta <b>source</b> y descargaremos el fichero acabado en <i>source.tar.xz</i>
+Una vez en el directorio entraremos en la carpeta <b>source</b> y descargaremos el fichero acabado en <i>source.tar.xz</i>.
+
 Una vez obtenido lo descomprimimos en nuestro directorio de trabajo y ya podemos empezar con el proceso de compilación.
 
 ## 3.- El entorno de compilación
@@ -84,12 +85,20 @@ mk_add_options MOZ_APP_NAME=firefoxESR
 mk_add_options MOZ_APP_DISPLAYNAME=FirefoxESR
 ```
 
+Junto a este fichero es necesario modificar la shell <i>confvars.sh</i> presente en el directorio "browser" para redefinir las vartiables MOZ_APP_BASENAME y MOZ_APP_VENDOR.
+
+```sh
+MOZ_APP_BASENAME=firefoxESR
+MOZ_APP_VENDOR=Lliurex
+```
+dejando el resto de la shell sin modificar.
+
 ## 4.- Personalizar firefox
-Una vez hemos creado nuestro fichero de configuración es hora de modificar los ficheros necesarios para que nuestro firefox-esr quede claramente diferenciado del firefox,
-para ello debemos modificar el <i>branding</i> y ajustarlo a nuestros requerimientos. En este punto podríamos también modificar los ficheros de preferencias pero estos los agregaremos posteriormente en el proceso de empaquetado.
-El <i>branding</i> de firefox consiste en los iconos y otros elementos visuales de la aplicación. La recomendación de Mozilla es usar el branding oficial para compilaciones limpias de los programas, aurora para las compilaciones de desarrollo, nightly para las nightly-builds y unofficial para las adaptciones personalizadas.
-En nuestro caso podríamos usar el branding oficial pero debido a que modificamos el nombre del binario y el de la clase de ventana optamos por gastar <i>unofficial</i>.
-Para realizar nuestra modificación accedemos al directorio <i>browser/branding/unofficial</i> y realzamos los siguientes ajustes:
+Una vez hemos creado nuestro fichero de configuración es hora de modificar los ficheros necesarios para que nuestro firefox-esr quede claramente diferenciado del firefox, para ello debemos modificar el <i>branding</i> y ajustarlo a nuestros requerimientos. En este punto podríamos también modificar los ficheros de preferencias pero estos los agregaremos posteriormente en el proceso de empaquetado.
+
+El <i>branding</i> de firefox consiste en los iconos y otros elementos visuales de la aplicación. La recomendación de Mozilla es usar el branding oficial para compilaciones limpias de los programas, aurora para las compilaciones de desarrollo, nightly para las nightly-builds y unofficial para las personalizaciones no soportadas de forma oficial. En nuestro caso podríamos usar el branding oficial pero debido a que modificamos el nombre del binario y el de la clase de ventana optamos por gastar <i>unofficial</i>.
+
+Para realizar nuestra modificación accedemos al directorio <i>browser/branding/unofficial</i> y realizamos los siguientes ajustes:
 
 * Copiamos los ficheros de imágenes (*bmp,*png y *ico) del directorio browser/branding/aurora 
 * Modifcamos la shell <i>configure.sh</i> dejándola con el siguiente contenido:
@@ -100,10 +109,10 @@ MOZ_APP_VENDOR="Mozilla"
 MOZ_APP_PROFILE=mozilla/firefoxESR
 MOZ_APP_NAME=firefoxESR
 ```
-* Dentro de la carptea <i>locales</i> creamos los directorios ca y es-ES y copiamos en cada uno de ellos el contenido del directorio en-US ajustando los valores relativos a la app a firefoxESR y dejando los valores relativos a vendor como Mozilla.
+* Dentro de la carpeta <i>locales</i> creamos los directorios ca y es-ES y copiamos en cada uno de ellos el contenido del directorio en-US asignando "firefoxESR" a los valores relativos a la app y dejando los valores relativos a vendor como "Mozilla".
 * Opcionalmente dentro del directorio <i>pref</i> podemos crear un fichero de configuración o modificar el existente pero esto, como ya hemos señalado, lo haremos en la fase de empaquetado.
 
-Una vez finalizado ya deberíamos tener todo listo para compilar firefox con nuestras opciones que darán lugar a un ejectuable llamado firefoxESR que usará como directorio de perfiles ~/.mozilla/firefoxesr de forma y manera que podrá convivir con una instalación normal de firefox.
+Una vez finalizado ya deberíamos tener todo listo para compilar firefox con nuestras opciones que darán lugar a un ejecutable llamado firefoxESR que usará como directorio de perfiles <i>~/.mozilla/firefoxesr</i> de forma y manera que podrá convivir con una instalación normal de firefox y usar en cada uno distintas configuraciones o complementos.
 
 ## 5.- Compilar para amd64
 Una vez configurados todos los ficheros compilar para amd64 pasa por situarnos en el directorio raíz de las fuentes y ejecutar los siguientes comandos
@@ -115,12 +124,13 @@ Una vez configurados todos los ficheros compilar para amd64 pasa por situarnos e
 ./mach package
 ```
 El primer comando lanza el configure, el segundo comando ejecuta la compilación y con el tercero podemos lanzar el firefox que acabamos de compilar para comprobar que todo sale según lo esperado.
-Si todo se muestra tal y como debe con el último comando prepararems el código para poder generar el paquete .deb.
+Si todo se muestra tal y como debe con el último comando prepararemos el código para poder generar el paquete .deb.
 
 ## 6.- Compilar para i386
 Para compilar para i386 necesitaremos, en Lliurex y otros derivados de Ubuntu/Debian, un entorno chroot de 32bits. Hemos optado por schroot como aplicación para generar nuestro chroot por su sencillez para configurarlo.
-También necesitaremos instalar los paquetes gcc-multilib y g++-multilib que nos permitiran generar binarios para i386.
-###Configuración del entorno chroot
+También necesitaremos instalar los paquetes gcc-multilib y g++-multilib que nos permitirán generar binarios para i386.
+
+### Configuración del entorno chroot
 * Instalamos el paquete y creamos el directorio de trabajo
 
 ```sh
@@ -129,7 +139,7 @@ sudo mkdir -p /var/chroot/linux32
 ```
 
 * Configuramos schroot
-Para ello abrimos el fichero <i>/etc/schroot/schroot.conf</i> y escribimos la condifuración:
+Para ello abrimos el fichero <i>/etc/schroot/schroot.conf</i> y escribimos la configuración
 
 ```sh
 [linux32]
@@ -143,6 +153,7 @@ users=****
 root-users=****
 ```
 En los campos <i>users</i> y <i>root_users</i> pondremos nuestro usuario local.
+
 * Agregamos la memoria compartida al chroot
 Para ello editamos el fichero <i>/etc/schroot/desktop/fstab</i> y agregamos la siguiente linea:
 
@@ -150,6 +161,7 @@ Para ello editamos el fichero <i>/etc/schroot/desktop/fstab</i> y agregamos la s
 /dev/shm       /dev/shm        none    rw,bind         0       0
 ```
 * Instalamos el sistema de 32 bits en el chroot
+
 ```sh
 sudo debootstrap --variant=buildd --arch=i386 --foreign xenial /var/chroot/linux32 http://archive.ubuntu.com/ubuntu
 ```
@@ -177,6 +189,7 @@ ln -s /var/chroot/linux32/usr/lib/i386-linux-gnu /usr/lib/
 ln -s /var/chroot/linux32/usr/include/i386-linux-gnu /usr/include/
 ```
 Si anteriormente hemos instalado multilib o ya tenemos un entorno de cross-compiling estos ficheros es posible que ya existirán y no podamos crear los enlaces. En este caso puedes crearlos directamente en los directorios correspondientes (si es necesario).
+
 * Añadimos la arquitectura i686 al compilador de Rust
 
 ```sh
@@ -236,6 +249,7 @@ cd %DIR_FIREFOX%
 ```
 
 Con esto ya tendremos un directorio obj-firefox-i686-pc-linux-gnu con nuestras fuentes listas para ser empaquetadas.
+Es importante tener en cuenta que puesto que hemos entrado al chroot como el usuario root debemos reasignar la propiedad de todos los ficheros del directorio de compilación a nuestro usuario local (chown -r ...)
 
 
 ## 7.- Empaquetado
@@ -248,4 +262,5 @@ Después de haber realizado la compilación tendremos dentro del directorio de l
 * Haremos lo mismo con el directorio firefox-x86_64
 * Dentro del directorio <i>llx-resources </i> tenemos el .desktop de la aplicación así como la metainformación para Lliurex-Store
 * Dentro de firefox-common tenemos los ficheros de configuración para darle el último toque a nuestra instalación de firefox-esr. Estos ficheros son comunes a las versiones de amd64 e i386.
+
 Una vez reemplazados los directorios con las fuentes compiladas y ajustada la información o las preferencias (de ser necesario) ya podemos subir nuestros cambios a subversión y generar el paquete como de costumbre.
