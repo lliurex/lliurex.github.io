@@ -39,9 +39,9 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Type : Dictionary</li>
 <li>Keys : <ul>
 <li>name ( STRING ) : Ruta donde se encuentra el script. Esta debe ser una ruta absoluta.</li>
-<li>remove ( BOOLEAN ) : <strong>Pendiente de aprovar</strong> Este atributo indicara si el script tiene fase de desinstalación, y sobretodo esta pensado para notificar a la gui que tiene una fase de desisntalación. Este atributo sólo se incluirá si el script dispone de fase de desinstación</li></ul></li>
-<li>getStatus ( BOOLEAN ) : <strong>Pendiente de aprovar</strong> Este atributo indicara si el script tiene una función para informar si la aplicación ya esta instalada (<strong>a utilizar en el caso de file type</strong>). Este atributo sólo se incluirá si el script dispone de la función necesaria para obtener el estado </li></ul></li>
-<li>addRepoKeys ( BOOLEAN ) : <strong>Pendiente de aprovar</strong> Este atributo indicara si el script tiene una función para obtener las keys de los repositorios necesarias para la instalacion en el caso de apt, como alternativa a "key_cmd" (<strong>a utilizar en el caso de apt type</strong>. Este atributo sólo se incluirá si el script dispone de la función para obtener la key </li></ul></li>
+<li>remove ( BOOLEAN ) : Este atributo indicara si el script tiene fase de desinstalación, y sobretodo esta pensado para notificar a la gui que tiene una fase de desisntalación. Este atributo sólo se incluirá si el script dispone de fase de desinstación</li></ul></li>
+<li>getStatus ( BOOLEAN ) : Este atributo indicara si el script tiene una función para informar si la aplicación ya esta instalada (<strong>a utilizar en el caso de file type</strong>). Este atributo sólo se incluirá si el script dispone de la función necesaria para obtener el estado </li></ul></li>
+<li>addRepoKeys ( BOOLEAN ) : Este atributo indicara si el script tiene una función para obtener las keys de los repositorios necesarias para la instalacion en el caso de apt, como alternativa a "key_cmd" (<strong>a utilizar en el caso de apt type</strong>. Este atributo sólo se incluirá si el script dispone de la función para obtener la key </li></ul></li>
 <li>Example: <code>{ ... "script" : { "name" : "/usr/share/foo/foo_script" , "remove" : true, "addRepoKeys":true } } ... }</code></li></ul></li>
 <li><strong>depends</strong><ul>
 <li>Using in: All types<li>
