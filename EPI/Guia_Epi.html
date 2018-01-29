@@ -33,36 +33,34 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>File : Ejecuta los pasos que se le indiquen en el fichero de script en el paso de instalación.</li></ul></li>
 <li>Example : <code>{ ... type: "apt" ... }</code></li></ul></li>
 <li><strong>script</strong><ul>
-<li>Using in: All types<li>
 <li>Required : False. <em>( Sólo es obligado ofrecer este fichero en el tipo "file", en el resto de tipos es opcional y serviria para ayudar realizando ajustes en las distintas fases de instalación )</em></li>
-<li>Description : Indica el script donde están indicado los pasos.</li>
+<li>Description : Indica que para realizar el proceso de instalación/desinstalación se utilizará un script adicional.</li>
 <li>Type : Dictionary</li>
 <li>Keys : <ul>
 <li>name ( STRING ) : Ruta donde se encuentra el script. Esta debe ser una ruta absoluta.</li>
-<li>remove ( BOOLEAN ) : Este atributo indicara si el script tiene fase de desinstalación, y sobretodo esta pensado para notificar a la gui que tiene una fase de desisntalación. Este atributo sólo se incluirá si el script dispone de fase de desinstación</li></ul></li>
-<li>getStatus ( BOOLEAN ) : Este atributo indicara si el script tiene una función para informar si la aplicación ya esta instalada (<strong>a utilizar en el caso de file type</strong>). Este atributo sólo se incluirá si el script dispone de la función necesaria para obtener el estado </li></ul></li>
-<li>addRepoKeys ( BOOLEAN ) : Este atributo indicara si el script tiene una función para obtener las keys de los repositorios necesarias para la instalacion en el caso de apt, como alternativa a "key_cmd" (<strong>a utilizar en el caso de apt type</strong>. Este atributo sólo se incluirá si el script dispone de la función para obtener la key </li></ul></li>
+<li>remove ( BOOLEAN ) : Este atributo indicara si el script tiene fase de desinstalación, y sobretodo esta pensado para notificar a la gui que tiene una fase de desisntalación. Este atributo sólo se incluirá si el script dispone de fase de desinstación</li>
+<li>getStatus ( BOOLEAN ) : Este atributo indicara si el script tiene una función para informar si la aplicación ya esta instalada (<strong>a utilizar en el caso de file type</strong>). Este atributo sólo se incluirá si el script dispone de la función necesaria para obtener el estado </li>
+<li>addRepoKeys ( BOOLEAN ) : Este atributo indicara si el script tiene una función para obtener las keys de los repositorios necesarias para la instalacion en el caso de apt, como alternativa a "key_cmd" (<strong>a utilizar en el caso de apt type</strong>. Este atributo sólo se incluirá si el script dispone de la función para obtener la key </li>
+<li>download ( BOOLEAN ) : Este atributo indicara si el script tiene una función para descargar el fichero (o  los ficheros) necesarios para instalar la aplicación (<strong>a utilizar en el caso de file type</strong>. Este atributo sólo se incluirá si el script dispone de la función para descargar ficheros </li></ul></li>
 <li>Example: <code>{ ... "script" : { "name" : "/usr/share/foo/foo_script" , "remove" : true, "addRepoKeys":true } } ... }</code></li></ul></li>
 <li><strong>depends</strong><ul>
-<li>Using in: All types<li>
 <li>Required: False </li>
 <li>Type : String</li>
 <li>Description: Este atributo sirve para crear dependencias con otro epi. Sirve para asegurarse que otro epi se ha instalado correctamente antes de instalar nuestro epi. Hay que indicarle la ruta donde se encutra dicho epi. Esto tiene la problematica de que no se puede realizar una dependencia con un nombre unico debido a que no se dispone de un respositorio de epi's.</li>
 <li>Example: <code>{ ... "depends":"/usr/share/zero-google-earth/google-earth.epi" ... }</code></li></ul></li>
 <li><strong>pkg_list</strong><ul>
-<li>Using in: All types<li>
 <li>Required: true</li>
 <li>Description : Lista de paquetes que instalara en la fase de instalación.</li>
 <li>Type : List</li>
 <li>Keys:<ul>
 <li>name ( STRING ) : Nombre del paquete a instalar. Este tambien sera el nombre que se utilice a la hora de mostrar en la gui.</li>
-<li>key_store ( STRING ) : "Nombre del paquete en la store para obtener metainformacion"</li>
+<li>key_store ( STRING ) : "Nombre del paquete en la store para obtener metainformacion. Este atributo sólo se incluirá si existe key para consultar en la store"</li>
 <li><strong>--- Only on deb | file type ---</strong></li>
 <li>version: En caso de ser un deb o file puede tener distintos debs o files para distintas arquitecturas. En este campo se le indica el nombre del deb (o file) que tiene que instalar / descargar dependiendo de la arquitectura. Los valores que puede tomar son <strong>all</strong>, <strong>64b</strong> y <strong>32b</strong>, donde all no distingue entre arquitecturas y los otros dos campos restantes equivalen a lo que indica. Sólo será necesario informar los campos necesarios <strong>Ejemplo</strong> : <code>"version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"}</code></li>
 <li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li></ul></li>
 <li>Example: <code>{ ... "pkg_list" : [{"name":"google-earth-pro-stable","version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"},"key_store":"zero-lliurex-gearth","url_download":"http://dl.google.com/dl/earth/client/current/"}] ...}</code></li></ul></li>
 <li><strong>repository</strong><ul>
-<li>Using in: All types<li>
+<li><strong>--- Only on apt type ---</strong></li>    
 <li>Required: False </li>
 <li>Type : List</li>
 <li>Description: Lista de de los repositorios que se han de añadir temporalmente para instalar los paquetes indicados en el pkg_list en el tipo de apt. Estos repositorios y claves seran borrados una vez se termine de realizar la instalacion.</li>
@@ -71,76 +69,147 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>key_cmd ( STRING ) : Comando que se utilizara si es necesario añadir las keys del repositorio para que sea una fuente confiable. Si el comando para añadir las keys es complejo en lugar de utilizar esta key se podria incluir en el script informando para ello la clave "addRepoKeys".</li></ul></li>
 <li>Example : <code>{... "repository": [{"url":"deb http://repository.spotify.com stable non-free","key_cmd":"apt-key --keyring /tmp/epi_keyring adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886 0DF731E45CE24F27EEEB1450EFDC8610341D9410"}] ...}</code></li></ul></li>
 <li><strong>force32</strong><ul>
-<li>Using in: All types<li>
 <li>Required: False </li>
 <li>Type:  Boolean</li>
 <li>Description: Fuerza a que en la instalacion se realize en base a 32 bits</li></ul></li>
 <li><strong>require_x</strong><ul>
-<li>Using in: all types<li>
 <li>Required: False </li>
 <li>Type:  Boolean</li>
 <li>Description: Le dice al instalador que para llevar a cabo este proceso es necesario que se ejecute este proceso en una sesion grafica con escritorio. Esto sobretodo se utiliza para aquellos casos en los que las aplicaciones van a lanzar una aplicacion grafica que pide datos.</li></ul></li>
 <li><strong>zomando</strong><ul>
-<li>Using in: All types<li>
 <li>Required: False </li>
 <li>Type: String</li>
 <li>Description: Aqui se indica el zomando asociado (puede no tenerlo) para realizar las modificaciones del estado correspondiente a este. De esta forma si se instala un paquete en el zero-center se representara como instalado.</li></ul></li>
-<li><strong>download_byscript</strong><ul>
-<li>Using in: file type<li>
-<li>Required: False</li>
-<li>Type: Boolean</li>
-<li>Description: Este campo se usa para indicarle a la interfaz que tiene que ser ella la que gestione la descarga. De esta forma si el valor de este campo es <strong>false</strong> EPI sera el encargado de descargar los ficheros asociados (debs o ficheros) basados en la arquitectura en la que estes. De otra forma la descarga de los ficheros se tendra que hacer de forma manual desde dentro del script, en la cual se tendra que comprobar que tipo de arquitectura eres y en base a eso bajar uno u otro. Todos los ficheros descargados mediante esto van a la ruta <em>/var/cache/epi-downloads/</em></li></ul></li>
 <li><strong>require_root</strong><ul>
-<li>Using in: file type<li>
+<li><strong>--- Only on file type ---</strong></li>    
 <li>Required: False</li>
 <li>Type: Boolean</li>
 <li>Description: Este campo esta pensado para indicarle al instalador que se require de permisos de root para poder instalar esta aplicacion. Esta enfocado para aquellas aplicaciones que pueden ser instalados en el home del usuario. De esta forma si la aplicacion se instala en su home el valor de este atributo sera false.</li></ul></li>
 </ul>
+<h2 id="formatodelficheroEPI">Formato del fichero EPI</h2>
+<p>Se muestra a continuación un ejemplo completo de un fichero EPI </p>
+<pre><code>
+ {
+    "type":"file",
+    "pkg_list": [{"name":"telegram","key_store":"zero-lliurex-telegram"}], 
+    "script": {"name":"/usr/share/zero-lliurex-telegram/telegram_script","remove":true,"getStatus":true,"download":true},
+    "required_x":true,
+    "required_root":true,
+    "zomado":"zero-lliurex-telegram"
+    
+    }
+</code></pre>    
+<h3 id="example">Example</h3>
 <h2 id="formatodelscriptdeinstalacion">Formato del script de instalacion</h2>
 <p>El script de instalacion es el encargado de indicar todas las acciones que se ejecutaran en las distintas fases que ejecuta EPI. Estas fases son las siguientes:
     - preinstall
-    - install
+    - installPackage
     - postinstall
     - remove
     - getStatus
-    - addRepoKeys</p>
+    - addRepoKeys
+    - download
+</p>
 <p>En cada una de las fases se llama el script entero pasandole como argumento la fase en la que se encuentra. Por esta razon se ha de hacer una comparacion del argumento que estamos recibiendo para ejecutar los pasos de instalacion o para realizar el paso de desinstalacion. Es <strong>importante</strong> que el script termine con exit 0 y en caso de que exista un error se salga del scritp con exit 1</p>
 <h3 id="example">Example</h3>
 <pre><code>#!/bin/bash
 
 ACTION="$1"
-VERSION="AdobeAIRInstaller.bin"
-PACKAGE_NAME="adobeair"
-APP_PATH="/var/cache/epi-downloads/"
-LOG_FILE="/tmp/zero-adobeair.log"
-uname -m &gt; /tmp/architectur.txt
-if [ $(grep "x86_64" /tmp/architectur.txt) ] ; then
-    ARCH="64"
+PKG="$2"
+
+USERHOME=$(getent passwd $USER | cut -f6 -d ':')
+BINDIR=$USERHOME"/.local/bin"
+DESTDIR=$BINDIR"/telegram"
+DESTDOWNLOAD="/var/cache/epi-downloads"
+DESTDESKTOP=$USERHOME"/.local/share/applications/zero-lliurex-telegram.desktop"
+
+
+TCH_URL="https://desktop.telegram.org/changelog"
+TVERSION=$(wget -qO- $TCH_URL | sed -e 's/<[^>]*>//g;/^\s*$/d' | grep -o 'v [0-9.]*' -m1 | cut -d ' ' -f2)
+
+if [[ $(arch) == "x86_64" ]]
+then
+    TSETUP="tsetup.${TVERSION}.tar.xz"
+    TURL="https://updates.tdesktop.com/tlinux/"
 else
-    ARCH="32"
+    TSETUP="tsetup32.${TVERSION}.tar.xz"
+    TURL="https://updates.tdesktop.com/tlinux32/"
 fi
+
 
 case $ACTION in
 
-    preInstall)
-
+    getStatus)
+        case $PKG in
+            telegram)
+                if [ -d ${DESTDIR} ]; then
+                    echo 0
+                else
+                    echo 1
+                fi
+            ;;
+        esac                        
     ;;
 
-    install)
+    download)
+        
+        cd ${DESTDOWNLOAD}
 
-        chmod +x $APP_PATH$VERSION
-
-        $APP_PATH$VERSION -silent -eulaAccepted -pingbackAllowed
-        TEST=$( dpkg-query -s $PACKAGE_NAME 2&gt; /dev/null| grep Status | cut -d " " -f 4 )
-        if [ "$TEST" != 'installed' ]; then
-            exit 1          
+        if [ -s ${DESTDOWNLOAD}"/"${TSETUP} ]
+        then
+            rm -f ${DESTDOWNLOAD}"/"${TSETUP}
         fi
+
+        wget ${TURL}${TSETUP}
+        
+        if ! [ -s ${DESTDOWNLOAD}"/"${TSETUP} ]
+        then    
+            exit 1
+        fi  
+    ;;  
+    
+    installPackage)
+
+        if ! [ -d $DESTDIR ]
+        then
+            echo $DESTDIR
+            mkdir $DESTDIR
+        fi  
+
+        echo "Unzipping file..."
+        
+        FIRSTPWD=$PWD
+        cd $DESTDOWNLOAD
+        tar -Jxf $TSETUP -C $DESTDIR
+        USER_GR=$(id -g -n ${USER})
+        chown -R ${USER}:${USER_GR} $BINDIR
+        
+        if [ $? -eq 0 ]
+        then    
+            cd $FIRSTPWD
+            echo "Launching telegram..."
+            su $USER -c /usr/bin/telegram &
+        else
+            rm -r $DESTDIR
+            exit 1
+        fi
+        
     ;;
 
-    postInstall)
+    remove)
+        
+        echo "Removing files..."
+        if [ -d $DESTDIR ]
+        then
+            rm -rf $DESTDIR
+        fi  
 
-    ;;
-
+        if [ -f $DESTDESKTOP ]
+        then
+            rm -f $DESTDESKTOP
+        fi   
+    ;;      
+        
 esac
 exit 0
 </code></pre></body>
