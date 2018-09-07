@@ -55,6 +55,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Keys:<ul>
 <li>name ( STRING ) : Nombre del paquete a instalar. Este tambien sera el nombre que se utilice a la hora de mostrar en la gui.</li>
 <li>key_store ( STRING ) : "Nombre del paquete en la store para obtener metainformacion. Este atributo sólo se incluirá si existe key para consultar en la store"</li>
+<li>eula ( STRING ) : En el caso de que haya que mostrar la licencia del paquete antes de instalar. En este campo se introducirá la dirección desde donde descargar la licencia (http:// o file://).<strong>Ejemplo</strong>: <code>"eula":"https://www.google.com/chrome/privacy/eula_text.html"</code></li>
 <li><strong>--- Only on deb | file type ---</strong></li>
 <li>version: En caso de ser un deb o file puede tener distintos debs o files para distintas arquitecturas. En este campo se le indica el nombre del deb (o file) que tiene que instalar / descargar dependiendo de la arquitectura. Los valores que puede tomar son <strong>all</strong>, <strong>64b</strong> y <strong>32b</strong>, donde all no distingue entre arquitecturas y los otros dos campos restantes equivalen a lo que indica. Sólo será necesario informar los campos necesarios <strong>Ejemplo</strong> : <code>"version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"}</code></li>
 <li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li></ul></li>
@@ -72,10 +73,10 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Required: False </li>
 <li>Type:  Boolean</li>
 <li>Description: Fuerza a que en la instalacion se realize en base a 32 bits</li></ul></li>
-<li><strong>require_x</strong><ul>
+<li><strong>required_x</strong><ul>
 <li>Required: False </li>
 <li>Type:  Boolean</li>
-<li>Description: Le dice al instalador que para llevar a cabo este proceso es necesario que se ejecute este proceso en una sesion grafica con escritorio. Esto sobretodo se utiliza para aquellos casos en los que las aplicaciones van a lanzar una aplicacion grafica que pide datos.</li></ul></li>
+<li>Description: Le dice al instalador que para llevar a cabo este proceso es necesario que se ejecute este proceso en una sesion grafica con escritorio. Esto sobretodo se utiliza para aquellos casos en los que las aplicaciones van a lanzar una aplicacion grafica que pide datos o sea necesario aceptar la licencia antes de instalar.</li></ul></li>
 <li><strong>zomando</strong><ul>
 <li>Required: False </li>
 <li>Type: String</li>
@@ -87,7 +88,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Description: Este campo esta pensado para indicarle al instalador que se require de permisos de root para poder instalar esta aplicacion. Esta enfocado para aquellas aplicaciones que pueden ser instalados en el home del usuario. De esta forma si la aplicacion se instala en su home el valor de este atributo sera false.</li></ul></li>
 </ul>
 <h2 id="formatodelficheroEPI">Formato del fichero EPI</h2>
-<p>Se muestra a continuación un ejemplo completo de un fichero EPI </p>
+<p>Se muestra a continuación unos ejemplos completos de ficheros EPI </p>
 <pre><code>
  {
     "type":"file",
@@ -98,7 +99,18 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
     "zomado":"zero-lliurex-telegram"
     
     }
-</code></pre>    
+</code></pre> 
+<pre><code>
+{
+	"type":"apt",
+	"pkg_list": [{"name":"google-chrome-stable","key_store":"zero-lliurex-chrome","eula":"https://www.google.com/chrome/privacy/eula_text.html"}], 
+	"repository": [{"url":"deb http://dl.google.com/linux/chrome/deb/ stable main","key_cmd":"wget -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key --keyring /tmp/epi_keyring add -"}], 
+	"script": {"name":"/usr/share/zero-lliurex-chrome/chrome_script", "remove":true},
+	"zomando":"zero-lliurex-chrome",
+	"required_x":true	
+	
+	}
+</code></pre>   
 <h3 id="example">Example</h3>
 <h2 id="formatodelscriptdeinstalacion">Formato del script de instalacion</h2>
 <p>El script de instalacion es el encargado de indicar todas las acciones que se ejecutaran en las distintas fases que ejecuta EPI. Estas fases son las siguientes:
