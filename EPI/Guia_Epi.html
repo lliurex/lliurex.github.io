@@ -26,11 +26,12 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li><strong>type</strong><ul>
 <li>Required : True</li>
 <li>Type : String</li>
-<li>Values : [ "apt" | "deb" | "file" ]</li>
+<li>Values : [ "apt" | "deb" | "file" | "localdeb" ]</li>
 <li>Description : Describe el tipo de EPI que es.<ul>
 <li>Apt: Realiza una instalacion desde un repositorio mediante apt. Puede ser el propio que ya se dispone u otro que se añade para la ocasion</li>
 <li>Deb: Instala un deb que puede estar disponible en el sistema o que puede estar en una url.</li>
-<li>File : Ejecuta los pasos que se le indiquen en el fichero de script en el paso de instalación.</li></ul></li>
+<li>File : Ejecuta los pasos que se le indiquen en el fichero de script en el paso de instalación.</li>
+<li>localdeb: Es un tipo interno que se usa para poder instalar cualquier deb mediante EPI.</li></ul></li>
 <li>Example : <code>{ ... type: "apt" ... }</code></li></ul></li>
 <li><strong>script</strong><ul>
 <li>Required : False. <em>( Sólo es obligado ofrecer este fichero en el tipo "file", en el resto de tipos es opcional y serviria para ayudar realizando ajustes en las distintas fases de instalación )</em></li>
@@ -77,7 +78,14 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Required: False </li>
 <li>Type:  Boolean</li>
 <li>Description: Le dice al instalador que para llevar a cabo este proceso es necesario que se ejecute este proceso en una sesion grafica con escritorio. Esto sobretodo se utiliza para aquellos casos en los que las aplicaciones van a lanzar una aplicacion grafica que pide datos o sea necesario aceptar la licencia antes de instalar.</li></ul></li>
-<li><strong>zomando</strong><ul>
+<li><strong>selection_enabled</strong><ul>
+<li>Required:False</li>
+<li>Type: list</li>
+<li>Description: Permite indicar si es posible que el usuario seleccione que paquetes de la lista tienen que ser instalados o desinstalados. Ádemás permite indicar si por defecto los paquetes se mostrarán ya seleccionados o bien deseleccionados</li>
+<li>Keys:<ul>
+<li>active (BOOLEAN) : si toma el valor True se activará la posibilidad de que el usuario pueda seleccionar los paquetes de lista</li>
+<li>all_selected (BOOLEAN): permite indicar si los paquetes se mostrarán por defecto ya marcados o bien desmarcados</li>
+<li>Example : <code>{..."selection_enabled":{"active":True,"all_selected":False}}</code></li></ul></li> <li><strong>zomando</strong><ul>
 <li>Required: False </li>
 <li>Type: String</li>
 <li>Description: Aqui se indica el zomando asociado (puede no tenerlo) para realizar las modificaciones del estado correspondiente a este. De esta forma si se instala un paquete en el zero-center se representara como instalado.</li></ul></li>
@@ -110,7 +118,18 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 	"required_x":true	
 	
 	}
-</code></pre>   
+</code></pre>
+<pre><code>
+{
+	"type":"apt",
+	"pkg_list": [{"name":"rsc-alquimia"},{"name":"rsc-animals-vertebrats"},{"name":"rsc-caixademusica"},{"name":"rsc-cifras"},{"name":"rsc-ingles"},{"name":"rsc-jclics"},{"name":"rsc-matematicas3"},{"name":"rsc-primartis"},{"name":"rsc-ser-pensar-conviure-fer"},{"name":"rsc-simon"}], 
+	"repository": [{"url":"deb http://ppa.launchpad.net/llxdev/recursos/ubuntu xenial main"}], 
+	"script": {"name":"/usr/share/zero-lliurex-recursos/primary_script", "remove":true},
+	"selection_enabled":{"active":true,"all_selected":true},
+	"zomando":"zero-lliurex-recursos-pri"
+	
+	}
+</code></pre>	   
 <h3 id="example">Example</h3>
 <h2 id="formatodelscriptdeinstalacion">Formato del script de instalacion</h2>
 <p>El script de instalacion es el encargado de indicar todas las acciones que se ejecutaran en las distintas fases que ejecuta EPI. Estas fases son las siguientes:
@@ -224,5 +243,29 @@ case $ACTION in
         
 esac
 exit 0
-</code></pre></body>
+</code></pre>
+<h3 id="example">Example</h3>
+<p>Se muestra un ejemplo de script que permite desinstalar los paquetes que haya seleccionado el usuario. Las lista de paquetes seleccionados se recibe como un parámetro</p>
+<pre><code>#!/bin/bash
+ACTION="$1"
+shift
+PACKAGE_LIST=$@
+
+case $ACTION in
+	remove)
+		for ix in $PACKAGE_LIST	
+		do
+
+			apt-get remove -y $ix
+			TEST=$( dpkg-query -s  $ix 2> /dev/null| grep Status | cut -d " " -f 4 )
+			if [ "$TEST" == 'installed' ];then
+				exit 1
+			fi
+							
+		done		
+	;;	
+esac
+exit 0
+</code></pre>
+</body>
 </html>
