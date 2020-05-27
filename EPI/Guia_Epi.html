@@ -85,15 +85,22 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Keys:<ul>
 <li>active (BOOLEAN) : si toma el valor True se activará la posibilidad de que el usuario pueda seleccionar los paquetes de lista</li>
 <li>all_selected (BOOLEAN): permite indicar si los paquetes se mostrarán por defecto ya marcados o bien desmarcados</li>
-<li>Example : <code>{..."selection_enabled":{"active":True,"all_selected":False}}</code></li></ul></li> <li><strong>zomando</strong><ul>
+<li>Example : <code>{..."selection_enabled":{"active":True,"all_selected":False}}</code></li></ul></li>
+<li><strong>zomando</strong><ul>
 <li>Required: False </li>
 <li>Type: String</li>
 <li>Description: Aqui se indica el zomando asociado (puede no tenerlo) para realizar las modificaciones del estado correspondiente a este. De esta forma si se instala un paquete en el zero-center se representara como instalado.</li></ul></li>
+<li><strong>require_dconf</strong><ui>
+<li><strong>--- Only on apt or deb type ---</strong></li>    
+<li>Required:False</li>
+<li>Type: Boolean</li>
+<li>Description: Este campo permite indicar al instalador que durante la instalación del paquete se muestre al usuario preguntas de configuración a través de la interfaz de Debconf.</li></ui></li> 	
 <li><strong>require_root</strong><ul>
 <li><strong>--- Only on file type ---</strong></li>    
 <li>Required: False</li>
 <li>Type: Boolean</li>
 <li>Description: Este campo esta pensado para indicarle al instalador que se require de permisos de root para poder instalar esta aplicacion. Esta enfocado para aquellas aplicaciones que pueden ser instalados en el home del usuario. De esta forma si la aplicacion se instala en su home el valor de este atributo sera false.</li></ul></li>
+
 </ul>
 <h2 id="formatodelficheroEPI">Formato del fichero EPI</h2>
 <p>Se muestra a continuación unos ejemplos completos de ficheros EPI </p>
