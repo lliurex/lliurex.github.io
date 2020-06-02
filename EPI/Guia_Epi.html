@@ -26,12 +26,13 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li><strong>type</strong><ul>
 <li>Required : True</li>
 <li>Type : String</li>
-<li>Values : [ "apt" | "deb" | "file" | "localdeb" ]</li>
+<li>Values : [ "apt" | "deb" | "file" | "localdeb" | "mix" ]</li>
 <li>Description : Describe el tipo de EPI que es.<ul>
 <li>Apt: Realiza una instalacion desde un repositorio mediante apt. Puede ser el propio que ya se dispone u otro que se añade para la ocasion</li>
 <li>Deb: Instala un deb que puede estar disponible en el sistema o que puede estar en una url.</li>
 <li>File : Ejecuta los pasos que se le indiquen en el fichero de script en el paso de instalación.</li>
-<li>localdeb: Es un tipo interno que se usa para poder instalar cualquier deb mediante EPI.</li></ul></li>
+<li>Localdeb: Es un tipo interno que se usa para poder instalar cualquier deb mediante EPI.</li>
+<li>Mix: Es un tipo de EPI que permite incluir y combiar distintos tipos de paquetes (apt,deb o file). Recomendado para su en ficheros EPI que ofrezcan una lista de paquetes al usuario para que este pueda seleccionar que instalar</li></ul></li>
 <li>Example : <code>{ ... type: "apt" ... }</code></li></ul></li>
 <li><strong>script</strong><ul>
 <li>Required : False. <em>( Sólo es obligado ofrecer este fichero en el tipo "file", en el resto de tipos es opcional y serviria para ayudar realizando ajustes en las distintas fases de instalación )</em></li>
@@ -59,8 +60,12 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>eula ( STRING ) : En el caso de que haya que mostrar la licencia del paquete antes de instalar. En este campo se introducirá la dirección desde donde descargar la licencia (http:// o file://).<strong>Ejemplo</strong>: <code>"eula":"https://www.google.com/chrome/privacy/eula_text.html"</code></li>
 <li><strong>--- Only on deb | file type ---</strong></li>
 <li>version: En caso de ser un deb o file puede tener distintos debs o files para distintas arquitecturas. En este campo se le indica el nombre del deb (o file) que tiene que instalar / descargar dependiendo de la arquitectura. Los valores que puede tomar son <strong>all</strong>, <strong>64b</strong> y <strong>32b</strong>, donde all no distingue entre arquitecturas y los otros dos campos restantes equivalen a lo que indica. Sólo será necesario informar los campos necesarios <strong>Ejemplo</strong> : <code>"version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"}</code></li>
-<li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li></ul></li>
-<li>Example: <code>{ ... "pkg_list" : [{"name":"google-earth-pro-stable","version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"},"key_store":"zero-lliurex-gearth","url_download":"http://dl.google.com/dl/earth/client/current/"}] ...}</code></li></ul></li>
+<li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li>
+<li>custom_name ( STRING ): Campo opcional que permite indicar un nombre "alternativo" al campo name. Este nombre alternativo será el que se muestre en la lista de paquetes aunque a nivel interno se seguirá usando el campo name</li>
+<li>custom_icon ( STRING ): Campo opcional que permite indicar el nombre del icono que se utilizará en la lista de paquetes</li>
+<li>type ( STRING ): Campo <strong>obligatorio</strong> en el caso de los ficheros EPi tipo <strong>"mix"</strong>. Permite indicar que tipo de paquete es. Puede tomar los siguientes valores: "apt", "deb" o "type"</li></ul></li>
+<li>Example: <code>{ ... "pkg_list" : [{"name":"google-earth-pro-stable","version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"},"key_store":"zero-lliurex-gearth","url_download":"http://dl.google.com/dl/earth/client/current/"}] ...}</code></li>
+<li>Example: <code>{ ... "pkg_list" : [{"name":"androidstudio","custom_name":"Android Studio tools for building apps on every type of Android  device.","custom_icon":"androidstudio.png","type":"file","eula":"https://developer.android.com/studio/terms"},...] ...}</code></li></ul></li>
 <li><strong>repository</strong><ul>
 <li><strong>--- Only on apt type ---</strong></li>    
 <li>Required: False </li>
@@ -100,8 +105,33 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Required: False</li>
 <li>Type: Boolean</li>
 <li>Description: Este campo esta pensado para indicarle al instalador que se require de permisos de root para poder instalar esta aplicacion. Esta enfocado para aquellas aplicaciones que pueden ser instalados en el home del usuario. De esta forma si la aplicacion se instala en su home el valor de este atributo sera false.</li></ul></li>
+<li><strong>custom_icon_path</strong><ul>
+<li>Required: False</li>
+<li>Type: String</li>
+<li>Description: Este campo esta pensado para indicarle al instalador la ruta donde se encuentran los iconos cuyo nombre se ha indicado en el campo "custom_icon" para un paquete (o paquetes) de la lista.</li>
+<li>Example : <code>{..."custom_icon_path":"/usr/share/zero-fp-informatica/"</code></li></ul></li>
 
 </ul>
+<h2 id="consideracionesMIX">Consideraciones para utilizar un fichero EPI tipo mix </h2>
+
+<p>Dado que mediante un fichero EPI tipo mix pueden combinarse paquetes de diversos tipos de paquetes con requerimientos distintos a la hora de descagar o consultar su estado es necesario establecer una serie de criterios para su utilización:</p>
+	<ul>
+		<li>Si el fichero mix incluye paquetes de tipo "file" será necesario incluir en el script asociado la sección <strong>getStatus</strong> para poder consultar si estos paquetes estan o no instalados en el sistema.Cuando se consulte esta sección si el paquete no es de tipo "file" deberá devolver "Not found".</li>
+	Ejemplo: <pre><code>getStatus)
+			
+					#START Android Studio Script, INTELLIJ
+						if [[ " ${PACKAGE_LIST[*]} " == *" androidstudio "* ]]; then
+							if [ -d $ANDROID_DEST"/android-studio" ];then
+								echo 0
+							else
+								echo 1
+							fi
+						else
+							echo "Not found"
+					;;</code></pre>
+
+	<li> Si el fichero mix incluye paquetes de tipo "file" a la hora de descargar los mismos se deberá optar o bien por realizar la descarga mediante los mecanismos internos de EPI o bien realizar la descarga mediante el apartado <strong>download</strong>. El método elegido se aplicará a todos los paquetes tipo "file" que contenga el fichero EPI mix</li></ul>				
+
 <h2 id="formatodelficheroEPI">Formato del fichero EPI</h2>
 <p>Se muestra a continuación unos ejemplos completos de ficheros EPI </p>
 <pre><code>
@@ -136,7 +166,24 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 	"zomando":"zero-lliurex-recursos-pri"
 	
 	}
-</code></pre>	   
+</code></pre>	
+<pre><code>
+{	
+ 	"type":"mix",
+	"pkg_list": [{"name":"androidstudio","custom_name":"Android Studio tools for building apps on every type of Android device.","custom_icon":"androidstudio.png","type":"file","eula":"https://developer.android.com/studio/terms"},{"name":"atom","custom_name":"Atom Text Editor","custom_icon":"atom.png","type":"file"},{"name":"bluegriffon","custom_name":"Bluegriffon Web Editor","custom_icon":"bluegriffon.png","type":"apt"},{"name":"dia","custom_name":"Dia diagram creation program","custom_icon":"dia.png","type":"apt"},{"name":"eclipse","custom_name":"Eclipse integrated development environment","custom_icon":"eclipse.png","type":"file"},{"name":"git","type":"apt","custom_name":"Git Version Control System","custom_icon":"git.png"},{"name":"git-buildpackage","type":"apt","custom_name":"Git Build Package to generate Debian packages","custom_icon":"gitbpg.png"},{"name":"gitkraken","custom_name":"GitKraken Git client for linux","custom_icon":"gitkraken.png","version":{"all":"gitkraken-amd64.deb"},"url_download":"https://release.gitkraken.com/linux/","type":"deb"},{"name":"intellij","custom_name":"Intellij Commnity Edition is a integrated Development Environment","custom_icon":"intellij.png","type":"file"},{"name":"kazam","custom_name":"Kazam screencasting program","custom_icon":"kazam.png","type":"apt"},{"name":"minicom","custom_name":"Minicom serial communication program","custom_icon":"minicom.png","type":"apt"},{"name":"packet-tracer","custom_name":"Packet Tracer 7 software for simulating Cisco networking devices","custom_icon":"packettracer.png","version":{"all":"PacketTracer_730_amd64.deb"},"url_download":"https://archive.org/download/packettracer730mac_202002/","type":"deb"},{"name":"pgadmin4","custom_name":"pgAdmin 4 platform for administration and development PostgreSQL","custom_icon":"pgadmin4.png"},{"name":"pdfmod","custom_name":"Pdfmod application for modifying PDF documents","custom_icon":"pdfmod.png","type":"apt"},{"name":"remmina","custom_name":"Remmina remote desktop client","custom_icon":"remmina.png","type":"apt"},{"name":"virtualbox","type":"apt","custom_name":"VirtualBox virtualization program","custom_icon":"virtualbox.png"},{"name":"xmlcopyeditor","custom_name":"XML Copy Editor for validating XML","custom_icon":"xmlcopyeditor.png","type":"apt"}], 
+
+	"repository": [{"url":"deb http://ppa.launchpad.net/remmina-ppa-team/remmina-next/ubuntu bionic main"},{"url":"deb https://packagecloud.io/AtomEditor/atom/any/ any main"}], 
+
+	"script": {"name":"/usr/share/zero-fp-informatica/zero-fp-informatica_script", "remove":true,"download":true,"getStatus":true},
+
+	"zomando":"zero-fp-informatica",
+
+	"custom_icon_path":"/usr/share/zero-fp-informatica/",
+
+	"selection_enabled":{"active":true,"all_selected":false}
+	}
+</code></pre>	
+
 <h3 id="example">Example</h3>
 <h2 id="formatodelscriptdeinstalacion">Formato del script de instalacion</h2>
 <p>El script de instalacion es el encargado de indicar todas las acciones que se ejecutaran en las distintas fases que ejecuta EPI. Estas fases son las siguientes:
@@ -272,6 +319,238 @@ case $ACTION in
 		done		
 	;;	
 esac
+exit 0
+</code></pre>
+<h3 id="example">Example</h3>
+<p>Se muestra un ejemplo de script que permite asociado a un epi tipo "mix"</p>
+<pre><code>#!/bin/bash
+ACTION="$1"
+
+shift
+PACKAGE_LIST=$@
+
+
+# START Define variables
+DESTDOWNLOAD="/var/cache/epi-downloads"
+ANDROID_STUDIO_URL="https://redirector.gvt1.com/edgedl/android/studio/ide-zips/3.6.3.0/"
+ANDROID_FILE="android-studio-ide-192.6392135-linux.tar.gz"
+ANDROID_DEST="/opt"
+ATOM_DEB="atom-amd64.deb"
+ATOM_URL="https://atom.io/download/deb"
+export PATH=$PATH:/snap/bin
+# END Define Variables
+
+case $ACTION in
+
+	getStatus)
+			
+		#START Android Studio Script, INTELLIJ
+			if [[ " ${PACKAGE_LIST[*]} " == *" androidstudio "* ]]; then
+				if [ -d $ANDROID_DEST"/android-studio" ];then
+					echo 0
+				else
+					echo 1
+				fi
+			elif [[ " ${PACKAGE_LIST[*]} " == *" intellij "* ]]; then
+				if [[ $(snap list | grep "intellij") == *"intellij"* ]];then 
+					echo 0
+				else 
+					echo 1
+				fi
+			elif [[ " ${PACKAGE_LIST[*]} " == *" eclipse "* ]]; then
+				if [[ $(snap list | grep "eclipse") == *"eclipse"* ]];then 
+					echo 0
+				else 
+					echo 1
+				fi
+				#statements
+			else
+        		echo "Not found"
+      		fi
+		#END Android Studio Script, INTELLIJ
+	;;
+		
+	download)
+			
+		#START Android Studio Script
+			if [[ " ${PACKAGE_LIST[*]} " == *" androidstudio "* ]]; then
+				echo "Downloading......"
+				cd ${DESTDOWNLOAD}
+				if [ -s ${DESTDOWNLOAD}"/"${ANDROID_FILE} ]
+				then
+					rm -f ${DESTDOWNLOAD}"/"${ANDROID_FILE}
+				fi
+				
+				wget ${ANDROID_STUDIO_URL}${ANDROID_FILE}
+				
+				if ! [ -s ${DESTDOWNLOAD}"/"${ANDROID_FILE} ]
+				then	
+					exit 1
+				fi 
+			fi
+		#END Android Studio Script
+
+
+		#START Atom Script
+			if [[ " ${PACKAGE_LIST[*]} " == *" atom "* ]]; then
+				echo "Downloading ATOM ... please wait"
+				cd ${DESTDOWNLOAD}
+				if [ -s ${DESTDOWNLOAD}"/"${ATOM_DEB} ]
+				then
+					rm -f ${DESTDOWNLOAD}"/"${ATOM_DEB}
+				fi
+				
+				wget -O ${ATOM_DEB} ${ATOM_URL}
+				
+				if ! [ -s ${DESTDOWNLOAD}"/"${ATOM_DEB} ]
+				then	
+					exit 1
+				fi 
+			fi
+		#END Atom Script
+			
+	;;
+
+	preInstall)
+		
+		#START Android Studio Script
+			if [[ " ${PACKAGE_LIST[*]} " == *" androidstudio "* ]]; then
+				apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386 -y
+			fi
+		#END Android Studio Script
+
+		#START Intellij IDEA
+			if [[ " ${PACKAGE_LIST[*]} " == *" intellij "* ]]; then
+				apt-get install snapd snapd-xdg-open -y
+			fi
+		#END Intellij IDEA
+
+		#START Eclipse
+			if [[ " ${PACKAGE_LIST[*]} " == *" eclipse "* ]]; then
+				apt-get install default-jre -y
+			fi
+		#END Eclipse
+
+		#START Atom
+			if [[ " ${PACKAGE_LIST[*]} " == *" atom "* ]]; then
+				echo "****Installing atom plugins... please wait****"
+				apt install gdebi-core -y
+				echo " * * Finished * * "
+			fi
+		#END Atom
+	;;
+
+	installPackage)
+		
+		#START Android Studio Script
+
+			if [[ " ${PACKAGE_LIST[*]} " == *" androidstudio "* ]]; then
+				cd $DESTDOWNLOAD
+				echo "Installing androidstudio... please wait"
+				tar -xvf $ANDROID_FILE -C $ANDROID_DEST
+				if [ $? -eq 0 ]
+				then
+					cd $ANDROID_DEST"/android-studio/bin"
+					echo "Launching androidstudio"
+					./studio.sh &
+				else
+					rm -f $ANDROID_DEST"/android-studio/bin"
+					exit 1
+				fi
+				echo " * * Finished * * "
+			fi
+		#END Android Studio Script
+
+		#START Intellij IDEA
+			if [[ " ${PACKAGE_LIST[*]} " == *" intellij "* ]]; then
+				echo "Installing intellij-idea-community... please wait"
+				snap install intellij-idea-community --classic --edge
+				echo " * * Finished * * "
+			fi
+		#END Intellij IDEA	
+
+		#START Eclipse
+			if [[ " ${PACKAGE_LIST[*]} " == *" eclipse "* ]]; then
+				echo "Installing Eclipse... please wait"
+				snap install --classic eclipse
+				echo " * * Finished * * "
+			fi
+		#END Eclipse	
+
+		#START Atom
+			if [[ " ${PACKAGE_LIST[*]} " == *" atom "* ]]; then
+				echo "****Installing atom plugins... please wait****"
+				gdebi ${DESTDOWNLOAD}"/"${ATOM_DEB} -n
+				echo " * * Finished * * "
+			fi
+		#END Atom	
+			
+	;;	
+
+	postInstall)
+		#START Remmina
+			if [[ " ${PACKAGE_LIST[*]} " == *" remmina "* ]]; then
+				echo "Installing remmina plugins... please wait"
+				apt install remmina-plugin-rdp remmina-plugin-secret -y
+				echo " * * Finished * * "
+			fi
+		#END Remmina
+
+		
+		
+			
+	;;	
+
+	remove)
+
+		for ix in $PACKAGE_LIST	
+
+		do
+			#START Android Studio Script
+			if [[ " $ix " == *" androidstudio "* ]]; then
+				echo "Removing files from Android Studio..."
+				if [ -d $ANDROID_DEST"/android-studio/" ]
+				then
+					rm -rf $ANDROID_DEST"/android-studio/"
+				fi
+				echo " * * Finished * * "
+			#END Android Studio Script
+
+			#START Intellij IDEA
+			elif [[ " $ix " == *" intellij "* ]]; then
+				echo "Uninstalling intellij-idea-community... please wait"
+				snap remove intellij-idea-community
+				echo " * * Finished * * "
+			#END Intellij IDEA	
+
+			#START Eclipse
+			elif [[ " $ix " == *" eclipse "* ]]; then
+				echo "Uninstalling Eclipse... please wait"
+				snap remove eclipse
+				echo " * * Finished * * "
+			#END Eclipse
+
+			else
+				apt-get remove -y $ix
+
+				TEST=$( dpkg-query -s  $ix 2> /dev/null| grep Status | cut -d " " -f 4 )
+
+				if [ "$TEST" == 'installed' ];then
+
+					exit 1
+
+				fi
+				echo " * * Finished * * "
+			fi
+
+							
+
+		done		
+
+	;;	
+
+esac
+
 exit 0
 </code></pre>
 </body>
