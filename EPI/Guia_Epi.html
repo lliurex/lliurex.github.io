@@ -58,23 +58,26 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>name ( STRING ) : Nombre del paquete a instalar. Este tambien sera el nombre que se utilice a la hora de mostrar en la gui.</li>
 <li>key_store ( STRING ) : "Nombre del paquete en la store para obtener metainformacion. Este atributo sólo se incluirá si existe key para consultar en la store"</li>
 <li>eula ( STRING ) : En el caso de que haya que mostrar la licencia del paquete antes de instalar. En este campo se introducirá la dirección desde donde descargar la licencia (http:// o file://).<strong>Ejemplo</strong>: <code>"eula":"https://www.google.com/chrome/privacy/eula_text.html"</code></li>
-<li><strong>--- Only on deb | file type ---</strong></li>
-<li>version: En caso de ser un deb o file puede tener distintos debs o files para distintas arquitecturas. En este campo se le indica el nombre del deb (o file) que tiene que instalar / descargar dependiendo de la arquitectura. Los valores que puede tomar son <strong>all</strong>, <strong>64b</strong> y <strong>32b</strong>, donde all no distingue entre arquitecturas y los otros dos campos restantes equivalen a lo que indica. Sólo será necesario informar los campos necesarios <strong>Ejemplo</strong> : <code>"version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"}</code></li>
-<li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li>
 <li>custom_name ( STRING ): Campo opcional que permite indicar un nombre "alternativo" al campo name. Este nombre alternativo será el que se muestre en la lista de paquetes aunque a nivel interno se seguirá usando el campo name</li>
 <li>custom_icon ( STRING ): Campo opcional que permite indicar el nombre del icono que se utilizará en la lista de paquetes</li>
-<li>type ( STRING ): Campo <strong>obligatorio</strong> en el caso de los ficheros EPi tipo <strong>"mix"</strong>. Permite indicar que tipo de paquete es. Puede tomar los siguientes valores: "apt", "deb" o "type"</li></ul></li>
-<li>Example: <code>{ ... "pkg_list" : [{"name":"google-earth-pro-stable","version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"},"key_store":"zero-lliurex-gearth","url_download":"http://dl.google.com/dl/earth/client/current/"}] ...}</code></li>
-<li>Example: <code>{ ... "pkg_list" : [{"name":"androidstudio","custom_name":"Android Studio tools for building apps on every type of Android  device.","custom_icon":"androidstudio.png","type":"file","eula":"https://developer.android.com/studio/terms"},...] ...}</code></li></ul></li>
-<li><strong>repository</strong><ul>
-<li><strong>--- Only on apt type ---</strong></li>    
+<li>entrypoint ( STRING): Campo opcional que permite indicar el comando que hay que ejecutar para lanzar la aplicación desde la propia ventana de EPI</li>
+<li>type ( STRING ): Campo <strong>obligatorio</strong> en el caso de los ficheros EPi tipo <strong>"mix"</strong>. Permite indicar que tipo de paquete es. Puede tomar los siguientes valores: "apt", "deb" o "file"</li></ul></li>
+<ul><ul><li>Example: <code>{ ... "pkg_list" : [{"name":"androidstudio","custom_name":"Android Studio tools for building apps on every type of Android  device.","custom_icon":"androidstudio.png","type":"file","eula":"https://developer.android.com/studio/terms"},...] ...}</code></li></ul></ul>
+
+<ul><li><strong>--- Only on deb | file type ---</strong><ul></ul><ul>
+<li>version: En caso de ser un deb o file puede tener distintos debs o files para distintas arquitecturas. En este campo se le indica el nombre del deb (o file) que tiene que instalar / descargar dependiendo de la arquitectura. Los valores que puede tomar son <strong>all</strong>, <strong>64b</strong> y <strong>32b</strong>, donde all no distingue entre arquitecturas y los otros dos campos restantes equivalen a lo que indica. Sólo será necesario informar los campos necesarios <strong>Ejemplo</strong> : <code>"version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"}</code></li>
+<li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li></ul></li></ul>
+<ul><ul><ul><li>Example: <code>{ ... "pkg_list" : [{"name":"google-earth-pro-stable","version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"},"key_store":"zero-lliurex-gearth","url_download":"http://dl.google.com/dl/earth/client/current/"}] ...}</code></li></ul></ul></ul></ul></li>
+
+
+<li><strong>repository: <strong>(Sólo en epi de tipo apt o mix. En el caso de mix cuando en la lista haya paquetes de tipo apt))</strong></strong><ul>
 <li>Required: False </li>
 <li>Type : List</li>
 <li>Description: Lista de de los repositorios que se han de añadir temporalmente para instalar los paquetes indicados en el pkg_list en el tipo de apt. Estos repositorios y claves seran borrados una vez se termine de realizar la instalacion.</li>
 <li>Keys:<ul>
 <li>url ( STRING ) : Linea exacta que se añadiria en un sources.list del repositorio.</li>
-<li>key_cmd ( STRING ) : Comando que se utilizara si es necesario añadir las keys del repositorio para que sea una fuente confiable. Si el comando para añadir las keys es complejo en lugar de utilizar esta key se podria incluir en el script informando para ello la clave "addRepoKeys".</li></ul></li>
-<li>Example : <code>{... "repository": [{"url":"deb http://repository.spotify.com stable non-free","key_cmd":"apt-key --keyring /tmp/epi_keyring adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886 0DF731E45CE24F27EEEB1450EFDC8610341D9410"}] ...}</code></li></ul></li>
+<li>key_cmd ( STRING ) : Comando que se utilizara si es necesario añadir las keys del repositorio para que sea una fuente confiable. Si el comando para añadir las keys es complejo en lugar de utilizar esta key se podria incluir en el script informando para ello la clave "addRepoKeys".</li></ul></li></ul>
+<ul><li>Example : <code>{... "repository": [{"url":"deb http://repository.spotify.com stable non-free","key_cmd":"apt-key --keyring /tmp/epi_keyring adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886 0DF731E45CE24F27EEEB1450EFDC8610341D9410"}] ...}</code></li></ul></li>
 <li><strong>force32</strong><ul>
 <li>Required: False </li>
 <li>Type:  Boolean</li>
@@ -95,13 +98,11 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Required: False </li>
 <li>Type: String</li>
 <li>Description: Aqui se indica el zomando asociado (puede no tenerlo) para realizar las modificaciones del estado correspondiente a este. De esta forma si se instala un paquete en el zero-center se representara como instalado.</li></ul></li>
-<li><strong>required_dconf</strong><ul>
-<li><strong>--- Only on apt or deb type ---</strong></li>    
+<li><strong>required_dconf (Sólo en epi de tipo apt o deb o cuando en el tipo mix haya paquetes de tipo apt o deb)</strong><ul>
 <li>Required: False</li>
 <li>Type: Boolean</li>
 <li>Description: Este campo esta pensado para indicarle al instalador que se permite durante la instalación del paquete mostrar al usuario preguntas relacionadas con la configuración del mismo mediante la interfaz de Debconf.</li></ul></li>
-<li><strong>required_root</strong><ul>
-<li><strong>--- Only on file type ---</strong></li>    
+<li><strong>required_root (Sólo en epi de tipo file o cuando en el tipo mix haya paquetes de tipo file)</strong><ul>
 <li>Required: False</li>
 <li>Type: Boolean</li>
 <li>Description: Este campo esta pensado para indicarle al instalador que se require de permisos de root para poder instalar esta aplicacion. Esta enfocado para aquellas aplicaciones que pueden ser instalados en el home del usuario. De esta forma si la aplicacion se instala en su home el valor de este atributo sera false.</li></ul></li>
@@ -132,6 +133,11 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 
 	<li> Si el fichero mix incluye paquetes de tipo "file" a la hora de descargar los mismos se deberá optar o bien por realizar la descarga mediante los mecanismos internos de EPI o bien realizar la descarga mediante el apartado <strong>download</strong>. El método elegido se aplicará a todos los paquetes tipo "file" que contenga el fichero EPI mix</li></ul>				
 
+<h2 id="ModoDebug">Utilización del modo debug en EPI</h2>
+
+<p>Para activar el modo debug cuando se ejecuta se utilizará el parámetro <strong>-d</strong> o <strong>--debug</strong>:
+	<ul><li><strong>Mediante EPI-GTK</strong>: sudo epi-gtk <em>ruta_fichero_epi</em> -d o sudo epi-gtk <em>ruta_fichero_epi</em> --debug</li></ul>
+	<ul><li><strong>Mediante EPIC</strong>: sudo epic install/uninstall -d <em>ruta_fichero_epi</em> o sudo epic install/uninstall --debug <em>ruta_fichero_epi</em></li></ul>
 <h2 id="formatodelficheroEPI">Formato del fichero EPI</h2>
 <p>Se muestra a continuación unos ejemplos completos de ficheros EPI </p>
 <pre><code>
@@ -553,5 +559,6 @@ esac
 
 exit 0
 </code></pre>
+
 </body>
 </html>
