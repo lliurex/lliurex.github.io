@@ -61,9 +61,10 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>custom_name ( STRING ): Campo opcional que permite indicar un nombre "alternativo" al campo name. Este nombre alternativo será el que se muestre en la lista de paquetes aunque a nivel interno se seguirá usando el campo name</li>
 <li>custom_icon ( STRING ): Campo opcional que permite indicar el nombre del icono que se utilizará en la lista de paquetes</li>
 <li>entrypoint ( STRING): Campo opcional que permite indicar el comando que hay que ejecutar para lanzar la aplicación desde la propia ventana de EPI</li>
-<li>type ( STRING ): Campo <strong>obligatorio</strong> en el caso de los ficheros EPi tipo <strong>"mix"</strong>. Permite indicar que tipo de paquete es. Puede tomar los siguientes valores: "apt", "deb" o "file"</li></ul></li>
+<li>type ( STRING ): Campo <strong>obligatorio</strong> en el caso de los ficheros EPi tipo <strong>"mix"</strong>. Permite indicar que tipo de paquete es. Puede tomar los siguientes valores: "apt", "deb" o "file"</li>
 <ul><ul><li>Example: <code>{ ... "pkg_list" : [{"name":"androidstudio","custom_name":"Android Studio tools for building apps on every type of Android  device.","custom_icon":"androidstudio.png","type":"file","eula":"https://developer.android.com/studio/terms"},...] ...}</code></li></ul></ul>
-
+<li>default_pkg (BOOLEAN): Campo opcional que permite indicar en un epi con lista de paquetes si el paquete se mostrará por defecto seleccionado cuando se ejecute EPI o EPIC.<strong> Sólo será válido si el valor del parámetro "all_selected" en el fichero EPI es igual a False</strong></li>
+<li>required_x (BOOLEAN): Campo opcional que permite indicar en un epi con lista de paquetes si el paquete no puede instalarse mediante terminal.<strong> Sólo será válido en el caso de que el fichero EPI no tenga fijado el parámetro required_x</strong></ul></li>
 <ul><li><strong>--- Only on deb | file type ---</strong><ul></ul><ul>
 <li>version: En caso de ser un deb o file puede tener distintos debs o files para distintas arquitecturas. En este campo se le indica el nombre del deb (o file) que tiene que instalar / descargar dependiendo de la arquitectura. Los valores que puede tomar son <strong>all</strong>, <strong>64b</strong> y <strong>32b</strong>, donde all no distingue entre arquitecturas y los otros dos campos restantes equivalen a lo que indica. Sólo será necesario informar los campos necesarios <strong>Ejemplo</strong> : <code>"version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"}</code></li>
 <li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li></ul></li></ul>
@@ -113,6 +114,12 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Example : <code>{..."custom_icon_path":"/usr/share/zero-fp-informatica/"</code></li></ul></li>
 
 </ul>
+<h2 id="epic">Instalación/Desinstalación de fichero EPI con lista de paquetes mediante EPIC</h2>
+<p> Para instalar/desinstalar un fichero EPI con lista de paquetes mediante EPIC se podrá utilizar las siguientes instrucciones. En ambos casos EPIC comprobará la validez de los parámetros indicados y en caso necesario mostrará un mensaje informativo. Por último indicar que se podrá utilizar el modo desantendido añadiendo el parámetro -u (--unattended):</p>
+	<ul>
+		<li> Si se quieren instalar/desinstalar todos los paquetes de la lista: epic install/uninstall "RUTA_FICHERO_EPI" all </li>
+		<li> Si sólo se quiere instalar/desinstalar alguno de los paquetes de la lista: epic install/uninstall "RUTA_FICHERO_EPI" "NOMBRE_PAQUETE" "NOMBRE_PAQUETE"</li>
+	</ul>	
 <h2 id="consideracionesMIX">Consideraciones para utilizar un fichero EPI tipo mix </h2>
 
 <p>Dado que mediante un fichero EPI tipo mix pueden combinarse paquetes de diversos tipos de paquetes con requerimientos distintos a la hora de descagar o consultar su estado es necesario establecer una serie de criterios para su utilización:</p>
