@@ -114,12 +114,85 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Example : <code>{..."custom_icon_path":"/usr/share/zero-fp-informatica/"</code></li></ul></li>
 
 </ul>
+<h2 id="epicHelp"> Instalación de ficheros epi mediante terminal</h2>
+<p> Además de mediante la interfaz gráfica, es posible instalar ficheros epi mediante la terminal usando para ello la herramienta EPIC. Para ver las distintas opciones ejecutar en una terminal la instrucción: <strong>epic -h(o --help)</strong></p>
+	<ui>
+		<pre><code>
+			Usage
+			epic [FLAGS...] ACTION
+			Actions
+				showlist : Shows alls epi files avaliables to be installed with EPIC
+				showinfo PATH or NAME APP_EPI_FILE : Shows information about APP_EPI_FILE
+				install PATH or NAME APP_EPI_FILE "optional" all" or "optional" pkg1" "optional pkg2"...
+				uninstall PATH or NAME APP_EPÌ_FILE "optional all" or "optional pkg1" "optional pkg2"...
+			Flags
+				-h --help : Show help
+				-u --unattended: Run the install/uninstall without prompting for user confirmation
+				-d --debug: Run the install/uninstall in debug mode
+		</code></pre>
+	</ui>
+
+<h2 id="epicList">Consultar la lista de ficheros epi instalables mediante EPIC </h2>
+<p> Es posible obtener la relación de todos los ficheros epi instalables mediante EPIC disponibles en el equipo donde se realiza la consulta. Para ello se ejecutará la instrucción: <strong>epic showlist</strong>
+	<ul>
+		<pre><code>
+			[EPIC]: List of all epi files that can be installed with EPIC: acroread.epi, anydesk.epi, autofirma.epi, bell-scheduler.epi, blockly-arduino.epi, chromecast.epi, docker.epi... 
+		</code></pre>
+	</ul>
+
+<h2 id="epicInfo">Consulta de la información sobre un fichero EPI mediante EPIC </h2>
+<p> Para obtener información sobre el contenido de un fichero EPI mediante EPIC se ejecutará la siguiente instrucción:<strong>epic showinfo "RUTA_FICHERO_EPI/FICERO_EPI"</strong>. Indicar que <strong>sólo se mostrará</strong> la información de aquellos ficheros epi que pueden instalados mediante EPIC, en caso contrario se mostraŕa un aviso. Así mismo indicar que <strong>"Packages availables" sólo se listan</strong> aquellos paquetes de la lista que pueden ser instalados mediante EPIC de forma que se excluyen los paquetes que necesitan una interfaz gráfica para su instalación</q>Entre la información di</p>
+	<ul>
+		<li>Ejemplo epi "normal": epic showinfo palemoon.epi</li>
+		<pre><code>
+			[EPIC]: Searching information...
+			[EPIC]: Information availabled:
+				- Application: palemoon lliurex-adobe-settings 
+				- Status: availabled
+				- Uninstall process availabled: No
+		</code></pre>
+		
+		<li> Ejemplo epi tipo lista: epic showinfo zero-fp-informatica.epi</li>
+		<pre><code>
+			[EPIC]: Searching information...	
+			[EPIC]: Information availabled:
+				- Packages availables: androidstudio atom bluegriffon dia eclipse git git-buildpackage gitkraken intellij kazam minicom packettracer pgadmin4 pdfmod qtmips remmina virtualbox xmlcopyeditor 
+				- Packages selected by defafult: None
+				- If you want to install all, indicate 'all'. If you want to install only some packages indicate their names separated by space
+				- Status: availabled
+				- Uninstall process availabled: Yes
+		</code></pre>		
+
+		<li>Ejemplo de epi tipo lista con paquetes preseleccionados: epic showinfo wine64.epi</li>
+		<pre><code>
+			[EPIC]: Searching information...
+			[EPIC]: Information availabled:
+				- Packages availables: wine-stable winetricks q4wine 
+				- Packages selected by defafult: wine-stable winetricks 
+				- If you want to install all, indicate 'all'. If you want to install only some packages indicate their names separated by space
+				- Status: availabled
+				- Uninstall process availabled: Yes
+		</code></pre>	     
+
+		<li> Ejemplo de respuesta al consultar la información de un epi que no es instalable por terminal: epic showinfo chrome.epi</li>
+		<pre><code>
+			[EPIC]: Searching information...
+			[EPIC]: Information availabled:
+				- Application not availabled to install/uninstall via terminal. Use epi-gtk for this
+		</code></pre>		
+
+	</ul>	 
+
 <h2 id="epic">Instalación/Desinstalación de fichero EPI con lista de paquetes mediante EPIC</h2>
 <p> Para instalar/desinstalar un fichero EPI con lista de paquetes mediante EPIC se podrá utilizar las siguientes instrucciones. En ambos casos EPIC comprobará la validez de los parámetros indicados y en caso necesario mostrará un mensaje informativo. Por último indicar que se podrá utilizar el modo desantendido añadiendo el parámetro -u (--unattended):</p>
 	<ul>
-		<li> Si se quieren instalar/desinstalar todos los paquetes de la lista: epic install/uninstall "RUTA_FICHERO_EPI" all </li>
-		<li> Si sólo se quiere instalar/desinstalar alguno de los paquetes de la lista: epic install/uninstall "RUTA_FICHERO_EPI" "NOMBRE_PAQUETE" "NOMBRE_PAQUETE"</li>
-	</ul>	
+		<li> Si se quieren instalar/desinstalar todos los paquetes de la lista: <strong>epic install/uninstall "RUTA_FICHERO_EPI/FICHERO_EPI" all </strong> . Ejemplo: epic install zero-fp-informatica.epi all </li>
+		<li> Si sólo se quiere instalar/desinstalar alguno de los paquetes de la lista: <strong>epic install/uninstall "RUTA_FICHERO_EPI/FICHERO_EPI" "NOMBRE_PAQUETE" "NOMBRE_PAQUETE"</strong>. Ejemplo: epic install -u zero-fp-informatica.epi androidstudio atom</li>
+		<li> Si en la lista de paquetes del epi ya hay algunos seleccionados por defecto para instalar sólo los paquetes "recomendados" se ejecutará: <strong>epic install "RUTA_FICHERO_EPI/FICHERO_EPI"</strong>. Ejemplo: epic install /usr/share/zero-lliurex-wine64
+	
+	</ul>
+
+
 <h2 id="consideracionesMIX">Consideraciones para utilizar un fichero EPI tipo mix </h2>
 
 <p>Dado que mediante un fichero EPI tipo mix pueden combinarse paquetes de diversos tipos de paquetes con requerimientos distintos a la hora de descagar o consultar su estado es necesario establecer una serie de criterios para su utilización:</p>
