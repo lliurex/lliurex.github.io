@@ -25,14 +25,16 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <ul>
 <li><strong>type</strong><ul>
 <li>Required : True</li>
-<li>Type : String</li>
-<li>Values : [ "apt" | "deb" | "file" | "localdeb" | "mix" ]</li>
+<li>Type : String</li> 
+<li>Values : [ "apt" | "deb" | "file" | "localdeb" | "mix" | "snap" | "flatpak" ]</li>
 <li>Description : Describe el tipo de EPI que es.<ul>
 <li>Apt: Realiza una instalacion desde un repositorio mediante apt. Puede ser el propio que ya se dispone u otro que se añade para la ocasion</li>
 <li>Deb: Instala un deb que puede estar disponible en el sistema o que puede estar en una url.</li>
 <li>File : Ejecuta los pasos que se le indiquen en el fichero de script en el paso de instalación.</li>
 <li>Localdeb: Es un tipo interno que se usa para poder instalar cualquier deb mediante EPI.</li>
-<li>Mix: Es un tipo de EPI que permite incluir y combiar distintos tipos de paquetes (apt,deb o file). Recomendado para su en ficheros EPI que ofrezcan una lista de paquetes al usuario para que este pueda seleccionar que instalar</li></ul></li>
+<li>Mix: Es un tipo de EPI que permite incluir y combiar distintos tipos de paquetes (apt,deb o file). RecomentrustLocaldado para su en ficheros EPI que ofrezcan una lista de paquetes al usuario para que este pueda seleccionar que instalar</li>
+<li>Snap: Permite instalar aplicaciones mediante el comando snap install</li>
+<li>Flatpak: Permite instalar aplicaciones mediante el comando flatpak install</li></ul></li>
 <li>Example : <code>{ ... type: "apt" ... }</code></li></ul></li>
 <li><strong>script</strong><ul>
 <li>Required : False. <em>( Sólo es obligado ofrecer este fichero en el tipo "file", en el resto de tipos es opcional y serviria para ayudar realizando ajustes en las distintas fases de instalación )</em></li>
@@ -61,7 +63,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>custom_name ( STRING ): Campo opcional que permite indicar un nombre "alternativo" al campo name. Este nombre alternativo será el que se muestre en la lista de paquetes aunque a nivel interno se seguirá usando el campo name</li>
 <li>custom_icon ( STRING ): Campo opcional que permite indicar el nombre del icono que se utilizará en la lista de paquetes</li>
 <li>entrypoint ( STRING): Campo opcional que permite indicar el comando que hay que ejecutar para lanzar la aplicación desde la propia ventana de EPI</li>
-<li>type ( STRING ): Campo <strong>obligatorio</strong> en el caso de los ficheros EPi tipo <strong>"mix"</strong>. Permite indicar que tipo de paquete es. Puede tomar los siguientes valores: "apt", "deb" o "file"</li>
+<li>type ( STRING ): Campo <strong>obligatorio</strong> en el caso de los ficheros EPi tipo <strong>"mix"</strong>. Permite indicar que tipo de paquete es. Puede tomar los siguientes valores: "apt", "deb", "file", "snap" o "flatpak"</li>
 <ul><ul><li>Example: <code>{ ... "pkg_list" : [{"name":"androidstudio","custom_name":"Android Studio tools for building apps on every type of Android  device.","custom_icon":"androidstudio.png","type":"file","eula":"https://developer.android.com/studio/terms"},...] ...}</code></li></ul></ul>
 <li>default_pkg (BOOLEAN): Campo opcional que permite indicar en un epi con lista de paquetes si el paquete se mostrará por defecto seleccionado cuando se ejecute EPI o EPIC.<strong> Sólo será válido si el valor del parámetro "all_selected" en el fichero EPI es igual a False</strong></li>
 <li>required_x (BOOLEAN): Campo opcional que permite indicar en un epi con lista de paquetes si el paquete no puede instalarse mediante terminal.<strong> Sólo será válido en el caso de que el fichero EPI no tenga fijado el parámetro required_x</strong></ul></li>
