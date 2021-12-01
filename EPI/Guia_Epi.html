@@ -131,6 +131,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 				-h --help : Show help
 				-u --unattended: Run the install/uninstall without prompting for user confirmation
 				-d --debug: Run the install/uninstall in debug mode
+				-n --no-check: Run the install/uninstall without check internet connection and apt,dpkg or lliurex-up locks
 		</code></pre>
 	</ui>
 
@@ -220,7 +221,16 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <p>Para activar el modo debug cuando se ejecuta se utilizará el parámetro <strong>-d</strong> o <strong>--debug</strong>:
 	<ul><li><strong>Mediante EPI-GTK</strong>: sudo epi-gtk <em>ruta_fichero_epi</em> -d o sudo epi-gtk <em>ruta_fichero_epi</em> --debug</li></ul>
 	<ul><li><strong>Mediante EPIC</strong>: sudo epic install/uninstall -d <em>ruta_fichero_epi</em> o sudo epic install/uninstall --debug <em>ruta_fichero_epi</em></li></ul>
+
+
+<h2 id="NoCheck">Utilización del parámetro no-check en EPI</h2>
+
+<p>El parámetro no-check permite ejecutar EPI <strong>sin comprobar</strong> la conexión a internet o posibles bloqueos debidos a Apt,Dpkg o Lliurex-Up:
+    <ul><li><strong>Mediante EPI-GTK</strong>: sudo epig-gtk <em>ruta_fichero_epi</em> -nc o sudo epi-gtk <em>ruta_fichero_epi</em> --no-check</li></ul>
+    <ul><li><strong>Mediante EPIC</strong>: sudo epic install/uninstall -nc <em>ruta_fichero_epi</em> o sudo epic install/uninstall --no-check <em>ruta_fichero_epi</em></li></ul>
+
 <h2 id="formatodelficheroEPI">Formato del fichero EPI</h2>
+
 <p>Se muestra a continuación unos ejemplos completos de ficheros EPI </p>
 <pre><code>
  {
