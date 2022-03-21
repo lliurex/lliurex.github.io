@@ -117,7 +117,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 
 </ul>
 <h2 id="epicHelp"> Instalación de ficheros epi mediante terminal</h2>
-<p> Además de mediante la interfaz gráfica, es posible instalar ficheros epi mediante la terminal usando para ello la herramienta EPIC. Para ver las distintas opciones ejecutar en una terminal la instrucción: <strong>epic -h(o --help)</strong></p>
+<p> Además de mediante la interfaz gráfica, es posible instalar ficheros epi mediante la terminal usando para ello la herramienta EPIC. Para ver las distintas opciones ejecutar en una terminal la instrucción.: <strong>epic -h(o --help)</strong></p>
 	<ui>
 		<pre><code>
 			Usage
@@ -144,7 +144,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 	</ul>
 
 <h2 id="epicInfo">Consulta de la información sobre un fichero EPI mediante EPIC </h2>
-<p> Para obtener información sobre el contenido de un fichero EPI mediante EPIC se ejecutará la siguiente instrucción:<strong>epic showinfo "RUTA_FICHERO_EPI/FICERO_EPI"</strong>. Indicar que <strong>sólo se mostrará</strong> la información de aquellos ficheros epi que pueden instalados mediante EPIC, en caso contrario se mostraŕa un aviso. Así mismo indicar que <strong>"Packages availables" sólo se listan</strong> aquellos paquetes de la lista que pueden ser instalados mediante EPIC de forma que se excluyen los paquetes que necesitan una interfaz gráfica para su instalación</q>Entre la información di</p>
+<p> Para obtener información sobre el contenido de un fichero EPI mediante EPIC se ejecutará la siguiente instrucción:<strong>epic showinfo "RUTA_FICHERO_EPI/FICERO_EPI"</strong>. Indicar que <strong>sólo se mostrará</strong> la información de aquellos ficheros epi que pueden instalados mediante EPIC, en caso contrario se mostraŕa un aviso. Así mismo indicar que <strong>"Packages availables" sólo se listan</strong> aquellos paquetes de la lista que pueden ser instalados mediante EPIC de forma que se excluyen los paquetes que necesitan una interfaz gráfica para su instalación. En <strong>"Packages already installed"</strong> se muestran los paquetes de la lista que ya estan instalados.Usando epic showinfo y tabulando se muestra la relación de los ficheros epi disponibles. También mediante el tabulador es posible completar el nombre del fichero epi</p>
 	<ul>
 		<li>Ejemplo epi "normal": epic showinfo palemoon.epi</li>
 		<pre><code>
@@ -162,7 +162,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 				- Packages availables: androidstudio atom bluegriffon dia eclipse git git-buildpackage gitkraken intellij kazam minicom packettracer pgadmin4 pdfmod qtmips remmina virtualbox xmlcopyeditor 
 				- Packages selected by defafult: None
 				- If you want to install all, indicate 'all'. If you want to install only some packages indicate their names separated by space
-				- Status: availabled
+				- Packages already installed: git git-buildpackage
 				- Uninstall process availabled: Yes
 		</code></pre>		
 
@@ -173,7 +173,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 				- Packages availables: wine-stable winetricks q4wine 
 				- Packages selected by defafult: wine-stable winetricks 
 				- If you want to install all, indicate 'all'. If you want to install only some packages indicate their names separated by space
-				- Status: availabled
+				- Packages already installed: None
 				- Uninstall process availabled: Yes
 		</code></pre>	     
 
@@ -201,7 +201,8 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <p>Dado que mediante un fichero EPI tipo "mix" pueden combinarse paquetes de diversos tipos de paquetes con requerimientos distintos a la hora de descagar o consultar su estado es necesario establecer una serie de criterios para su utilización:</p>
 	<ul>
 		<li>Si el fichero EPI tipo "mix" incluye paquetes de tipo "file" será necesario incluir en el script asociado la sección <strong>getStatus</strong> para poder consultar si estos paquetes estan o no instalados en el sistema.Cuando se consulte esta sección si el paquete no es de tipo "file" deberá devolver "Not found".</li>
-	Ejemplo: <pre><code>getStatus)
+		<li>En el caso de usar <strong>getStatus</strong> es importante que en el echo únicamente se devuelva: 0,1 o "Not found". De lo contrario la comprobación del estado fallará y la informacíón que muestre EPI no será correcta. Además hay que evitar que haya echo fuera de los distintos "case" del script</li>
+	Ejemplo de getStatus correcto: <pre><code>getStatus)
 			
 					#START Android Studio Script, INTELLIJ
 						if [[ " ${PACKAGE_LIST[*]} " == *" androidstudio "* ]]; then
@@ -213,6 +214,40 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 						else
 							echo "Not found"
 					;;</code></pre>
+
+	Ejemplo de getStatus incorrecto: <pre><code>getStatus)
+					if [[ " ${PACKAGE_LIST[*]} " == *" musescoref "* ]]; then
+						if flatpak list --app | grep org.musescore.MuseScore;then
+							echo 0
+						else
+							echo 1
+						fi
+					else
+						echo "Not found"
+					fi
+					;;
+		...
+		esac
+		echo "End script"
+		exit 0</code></pre>
+
+	En el ejemplo anterior si el paquete está instalado el echo que devuelve getStatus es la suma del echo de la instrucción flatpack list + 0 + "End script". Como consequencia EPI indicará que el paquete no esta instalado o que la instalación ha fallado.
+
+	Ejemplo getStatus corregido: <pre><code>getStatus)
+					if [[ " ${PACKAGE_LIST[*]} " == *" musescoref "* ]]; then
+						TEST=$(flatpak list --app | grep org.musescore.MuseScore)
+						if [[ $TEST ]]; then
+							echo 0
+						else
+							echo 1
+						fi
+					else
+						echo "Not found"
+					fi
+					;;
+	...
+	esac
+	exit 0 </code></pre>
 
 	<li> Si el fichero EPI tipo "mix" incluye paquetes de tipo "file" a la hora de descargar los mismos se deberá optar o bien por realizar la descarga mediante los mecanismos internos de EPI o bien realizar la descarga mediante el apartado <strong>download</strong>. El método elegido se aplicará a todos los paquetes tipo "file" que contenga el fichero EPI "mix"</li></ul>				
 
