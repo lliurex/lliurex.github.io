@@ -58,7 +58,7 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Type : List</li>
 <li>Keys:<ul>
 <li>name ( STRING ) : Nombre del paquete a instalar. Este tambien sera el nombre que se utilice a la hora de mostrar en la gui.</li>
-<li>key_store ( STRING ) : "Nombre del paquete en la store para obtener metainformacion. Este atributo sólo se incluirá si existe key para consultar en la store"</li>
+<li>key_store ( STRING ) DEPRECATED : "Nombre del paquete en la store para obtener metainformacion. Este atributo sólo se incluirá si existe key para consultar en la store"</li>
 <li>eula ( STRING ) : En el caso de que haya que mostrar la licencia del paquete antes de instalar. En este campo se introducirá la dirección desde donde descargar la licencia (http:// o file://).<strong>Ejemplo</strong>: <code>"eula":"https://www.google.com/chrome/privacy/eula_text.html"</code></li>
 <li>custom_name ( STRING ): Campo opcional que permite indicar un nombre "alternativo" al campo name. Este nombre alternativo será el que se muestre en la lista de paquetes aunque a nivel interno se seguirá usando el campo name</li>
 <li>custom_icon ( STRING ): Campo opcional que permite indicar el nombre del icono que se utilizará en la lista de paquetes</li>
@@ -67,7 +67,14 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <ul><ul><li>Example: <code>{ ... "pkg_list" : [{"name":"androidstudio","custom_name":"Android Studio tools for building apps on every type of Android  device.","custom_icon":"androidstudio.png","type":"file","eula":"https://developer.android.com/studio/terms"},...] ...}</code></li></ul></ul>
 <li>default_pkg (BOOLEAN): Campo opcional que permite indicar en un epi con lista de paquetes si el paquete se mostrará por defecto seleccionado cuando se ejecute EPI o EPIC.<strong> Sólo será válido si el valor del parámetro "all_selected" en el fichero EPI es igual a False</strong></li>
 <li>required_x (BOOLEAN): Campo opcional que permite indicar en un epi con lista de paquetes si el paquete no puede instalarse mediante terminal.<strong> Sólo será válido en el caso de que el fichero EPI no tenga fijado el parámetro required_x</strong></ul></li>
-<ul><li><strong>--- Only on deb | file type ---</strong><ul></ul><ul>
+<ul><li>skip_flavours (LIST): campo opcional que permite indicar los sabores donde no se podrá instalar el paquete. Al informar este campo el paquete no será mostrado por EPI. Valores a introducir: server, client, desktop.</li>
+<ul><ul><li>Example: <code>..."pkg_list":[{"name":"pgadmin4",..."skip_flavours":["client","desktop"]}]}</code></li></ul></ul>
+<li>skip_groups (LIST): campo opcional que permite restringir la instalación y/o desintalación del paquete a los grupos que se indiquen. Formato:</li>
+<ul><li>group: campo para indicar el grupo. Valores permitidos: teachers,students...</li></ul>
+<ul><li>action: campo para indicar la acción bloqueada. Valores permitidos: all, remove</li></ul>
+
+<ul><ul><li>Example: <code>{..."pkg_list":[{"name":"androidstrudio",..."skip_groups":[{"group":"teachers,"action":"remove"},{"group":"students","action":"all"}]}]}</code></li></ul></ul>
+<li><strong>--- Only on deb | file type ---</strong><ul>
 <li>version: En caso de que el paquete sea de tipo "deb" o "file" puede tener distintos debs o files para distintas arquitecturas. En este campo se le indica el nombre del deb (o file) que tiene que instalar / descargar dependiendo de la arquitectura. Los valores que puede tomar son <strong>all</strong>, <strong>64b</strong> y <strong>32b</strong>, donde all no distingue entre arquitecturas y los otros dos campos restantes equivalen a lo que indica. Sólo será necesario informar los campos necesarios <strong>Ejemplo</strong> : <code>"version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"}</code></li>
 <li>url_download ( STRING ) : Direccion desde donde se ha de descargar el deb. Se puede utilizar el protocolo http o file. Para realizar la descarga solo se indica la ruta base donde estan los debs. En caso de estuviera en carpetas distintas, en este atributo se deberia de poner la ruta comun y completar la ruta en el campo version. Los ficheros descargados se guardaran en la ruta <em>/var/cache/epi-downloads/</em></li></ul></li></ul>
 <ul><ul><ul><li>Example: <code>{ ... "pkg_list" : [{"name":"google-earth-pro-stable","version":{"64b":"google-earth-stable_current_amd64.deb","32b":"google-earth-stable_current_i386.deb"},"key_store":"zero-lliurex-gearth","url_download":"http://dl.google.com/dl/earth/client/current/"}] ...}</code></li></ul></ul></ul></ul></li>
@@ -114,7 +121,15 @@ Por convención los ficheros se instalaran en la ruta /usr/share/NOMBREDELPAQUET
 <li>Type: String</li>
 <li>Description: Este campo esta pensado para indicarle al instalador la ruta donde se encuentran los iconos cuyo nombre se ha indicado en el campo "custom_icon" para un paquete (o paquetes) de la lista.</li>
 <li>Example : <code>{..."custom_icon_path":"/usr/share/zero-fp-informatica/"</code></li></ul></li>
-
+<li><strong>lock_remove_groups</strong><ul>
+<li>Required: False</li>
+<li>Type: list</li>
+<li>Description: Este campo permite indicar la relación de grupos que tienen bloqueada la opción de ejecutar el proceso de desinstalación en el zomando. Afecta a todos los paquetes que ofrezca el .epi</li>
+<li>Example: <code>{..."lock_remove_groups":["students"]}</code></li></ul></li>
+<li><strong>wiki</strong><ul>
+<li>Required: False </li>
+<li>Type: String </li>
+<li>Description: Este campo permite indicar la url del artículo de la wiki asociado al zomando. Si se implementa EPI mostrará un botón para acceder al mismo</li></ul>
 </ul>
 <h2 id="epicHelp"> Instalación de ficheros epi mediante terminal</h2>
 <p> Además de mediante la interfaz gráfica, es posible instalar ficheros epi mediante la terminal usando para ello la herramienta EPIC. Para ver las distintas opciones ejecutar en una terminal la instrucción.: <strong>epic -h(o --help)</strong></p>
