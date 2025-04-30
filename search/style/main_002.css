@@ -1,0 +1,321 @@
+#nav{
+    background-color: #64b6ceff;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-family: "Noto Sans";
+    padding-right: 20px;
+}
+
+.bookmarkswrapper img.logo{
+    max-width: 260px;
+    margin-bottom: 2em;
+    margin-top: 2em;
+}
+
+#nav .servername{
+    font-family: "Noto Sans";
+    font-size: 3em;
+    color: white;
+    font-weight: bolder;
+    margin-top: 0.8em;
+    text-transform: capitalize;
+}
+#nav img.valentin{
+    margin-top: auto;
+    max-width: 235px ;
+    align-self: center;
+}
+
+#grid-nav{
+    grid-template-columns: 349px auto;
+}
+
+
+#content{
+    display: flex;
+    flex-direction: column;
+    margin:0;
+}
+#content .navbar{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 0.25em 1em;
+}
+
+.navbar .news img{
+    max-height: 32px;
+}
+
+.navbar .news img:hover{
+    background-color: var(--color-hoverblue);    
+}
+
+#content .bookmarkswrapper{
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#content .bookmarks{
+    display: flex;
+    /* flex-direction: row; */
+    align-items: center;
+    /*flex-grow: 2;*/
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+#content .bookmarks a{
+    text-decoration: none;
+}
+
+#content .bookmarks .cardlink{
+    margin:20px;
+
+}
+
+
+
+#content .bookmarks .cardlink img{
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0px 4px rgba(0,0,0,0.2);
+    transition: filter 0.3s;
+}
+
+#content .bookmarks .cardlink:hover img{
+    filter: brightness(115%);
+    transition: filter 0.3s;
+}
+
+
+#content .cardlink{
+    position: relative;
+}
+
+#content .bookmarks .cardlink .cardname{
+    margin-top: 10px;
+    text-align: center;
+    color: black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 110px;
+    white-space: nowrap;
+    padding:4px 4px;
+    transition: background-color 0.3s;
+}
+
+
+
+#content .bookmarks .cardlink .cardtooltip{
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    z-index: 1;
+    transition: visibility 0.3s, opacity 0.3s;
+    background-color: black;
+    color: white;
+    margin: 2px;
+}
+#content .bookmarks .cardlink:hover .cardtooltip{
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0.3s, opacity 0.3s;
+}
+
+#content .bookmarks .cardlink:hover .cardname{
+    background-color: var(--color-hoverblue);
+    transition: background-color 0.3s;
+}
+
+
+body{
+    background-color: var(--color-cardboardgray);
+}
+
+.search{
+    display: block;
+    width: 100%;
+    margin-bottom: 3em;
+    margin-top: 1em;
+}
+
+.search form{
+    margin-bottom: 0;
+    align-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+
+.search input{
+    display: block;
+    border-radius: 3px;
+    border: 1px solid var(--color-alternategray);
+    height: 3em;
+    padding: 0 10px;
+    width: 88%;
+    /* box-shadow: 0px 2px 0px rgba(0,0,0,0.2); */
+    margin: 0 auto;
+    transition: border-color 0.3s;
+}
+
+.search input:focus{
+    outline: none;
+}
+
+.search input:hover{
+    border-color: var(--color-hoverblue);
+    transition: border-color 0.3s;
+    /* box-shadow: 0px 2px 0px var(--color-hoverblue); */
+}
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbutton{
+    display: block;
+    color: black;
+    font-weight: bolder;
+    font-size: 20px;
+    
+    padding: 0.25em 0.5em;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+.dropdown-content {
+    visibility: hidden;
+    position: absolute;
+    opacity: 0;
+    transition: visibility 0.5s, opacity 0.5s;
+    right:0;
+    min-width: 160px;
+    z-index: 1;
+    border-top: 1px solid rgba(0,0,0,0.3);
+    box-shadow: 0px -3px 0px var(--color-cardboardgray),1px 0px 2px rgba(0,0,0,0.3), -1px 0px 1px rgba(0,0,0,0.3), 0px 1px 2px rgba(0,0,0,0.3);
+    background-color: var(--color-cardboardgray);
+}
+
+.news .dropdown-content{
+    overflow-y: scroll;
+    white-space: nowrap;
+    max-height: 90vh;
+    max-width: 400px;
+  }
+
+
+.dropdown-content a {
+    color: black;
+    padding: 6px 8px;
+    margin: 6px 8px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+
+.dropdown-content a:hover {background-color: var(--color-hoverblue); transition: background-color 0.3s; border-radius: 3px;}
+
+.dropdown:hover .dropdown-content {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0.5s, opacity 0.5s;
+}
+
+.dropdown:hover .dropbutton {
+    background-color: var(--color-hoverblue);
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.notification{
+    position: absolute;
+    right: 10%;
+    width: 11px;
+    height: 10px;
+    background-color: var(--color-dangerred);
+    border-radius: 50%;
+    visibility: hidden;
+}
+
+.visible{
+    visibility: visible;
+}
+
+#rss{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 649px;
+    margin: 0 auto 2em auto;
+    box-shadow: 0px -3px 0px var(--color-cardboardgray),1px 0px 2px rgba(0,0,0,0.3), -1px 0px 1px rgba(0,0,0,0.3), 0px 1px 2px rgba(0,0,0,0.3);
+}
+
+#rss .row{
+    width: 100%;
+    background: var(--color-paperwhite);
+    border-top: 1px solid var(--color-alternategray);
+}
+
+#rss .row:hover{
+    background-color: var(--color-hoverblue);
+}
+
+#rss .row a{
+    margin: 0.5em;
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+
+@media (max-width: 1030px) {
+
+    #grid-nav{
+        grid-template-columns: 230px auto ;
+    }
+
+    #nav{
+        max-width: 230px;
+        padding-right: 10px;
+    }
+
+    #nav img.valentin{
+        max-width: 120px ;
+    }
+
+    #nav .servername{
+        font-size: 2em;
+    }
+
+    #content .bookmarks .cardlink img{
+        width: 70px;
+        height: 70px;
+    }
+
+    #content .bookmarks .cardlink .cardname{
+        width: 70px;
+    }
+    .search input{
+        height: 2em;
+    }
+
+    .dropbutton{
+        font-size: 16px;
+    }
+
+}
+

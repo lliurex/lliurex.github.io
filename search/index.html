@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LliureX 25</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Seccion A === */
+.header {
+  
+  padding: 100px 20px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  width: 400px;
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+
+  justify-content: center;
+}
+
+.search-input {
+  padding: 10px;
+  font-size: 1rem;
+  width: 60%;
+}
+
+.search-input:focus {
+    outline: none !important;
+    border: 2px solid #022851;
+    box-shadow: 0 0 2px #719ECE;
+}
+
+
+.search-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+   background-color: #022851;
+}
+
+/* === Seccion B + C === */
+.main-content {
+  flex: 1;
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 0px;
+}
+
+/* B: Sidebar de enlaces */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+  margin-bottom: 20px;
+  font-family: Noto Sans;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: #022851;
+  font-size: 1.1rem;
+  padding: 5px;
+
+}
+
+.sidebar a:hover {
+  background-color: white; 
+  color: #005F99; 
+  border-radius: 4px; 
+  box-shadow: 0px 1px 1px lightgray;
+  border-radius: 5px;
+}
+
+.sidebar img {
+  width: 64px;
+  height: 64px;
+}
+
+/* C: Ilustracion */
+.illustration-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.illustration {
+  max-width: 100%;
+  height: auto;
+  max-height: 400px;
+}
+
+/* === Responsivo === */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    gap: 15px;
+  }
+
+  .sidebar a {
+    flex-direction: column;
+    font-size: 0.9rem;
+  }
+
+  .illustration {
+    max-height: 350px;
+  }
+}
+
+</style>
+<body>
+  <!-- Seccion A -->
+  <header class="header">
+    <a href="https://portal.edu.gva.es/lliurex"><img src="images/logo.svg" alt="Logo" class="logo"></a>
+    <form class="search-form" action="https://duckduckgo.com/" method="GET" target="_blank">
+      <input type="text" name="q" placeholder="Buscar..." class="search-input" />
+      <button type="submit" class="search-button"><img src="images/search.png" width="19"></button>
+    </form>
+  </header>
+
+  <!-- Seccion B + C -->
+  <main class="main-content">
+    <!-- B: Enlaces -->
+    <nav class="sidebar">
+        <a href="https://portal.edu.gva.es/appsedu">
+            <img src="images/appsedu.png" alt="Icono 1"> Appsedu
+        </a>
+        <a href="https://portal.edu.gva.es/aules">
+            <img src="images/aules.png" alt="Icono 2"> Aules
+        </a>
+        <a href="https://portal.edu.gva.es/aules">
+            <img src="images/biblioedu.png" alt="Icono 3"> Biblioedu
+        </a>
+    </nav>
+
+    <!-- C: Ilustracion -->
+    <section class="illustration-container">
+      <img src="images/casimiro.png" alt="Ilustracion" class="illustration">
+    </section>
+  </main>
+</body>
+</html>
