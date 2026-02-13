@@ -7,4 +7,4 @@ async function checkServer(url,elementId){
          console.log(`URL ${url} not accesible`)   
     }
 }
-checkServer('http://server/easy-sites','conditional-site')
+checkServer('http://server','conditional-site')
