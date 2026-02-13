@@ -4,6 +4,7 @@ async function checkServer(url,elementId){
         const response=await fetch(url,{method:'HEAD',mode:'no-cors',cache:'no-store',targetAddressSpace:'local'});
             document.getElementById(elementId).style.visibility="visible";
     }catch(error){
+        console.log(error.message);
         if (error.message.includes('CORS policy')){
             document.getElementById(elementId).style.visibility="visible";
         }else{
